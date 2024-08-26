@@ -181,6 +181,7 @@ useEffect(() => {
                 <Text style={{ color: 'white' }}>{recipientDetail?.description}</Text>
               </View>
 
+
               <View
                 style={{
                   marginTop: 40,
