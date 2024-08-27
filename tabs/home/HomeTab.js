@@ -59,9 +59,9 @@ export default function HomeTab({ navigation }) {
 
     setTransactions(null);
     let transactions = await httpRequest(
-      'customer/get-transaction',
-      'post',
-      { pageNumber: 1, pageSize: 3 },
+      'customer/get-transaction?pageNumber=1&pageSize=3',
+      'get',
+      null,
       true
     );
     if (transactions.success) setTransactions(transactions.data);

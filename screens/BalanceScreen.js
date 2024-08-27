@@ -104,7 +104,7 @@ export default function BalanceScreen({ route, navigation }) {
     setIsAutoWithdrawalRequest(!isAutoWithdrawalRequest);
     let result = await httpRequest(
       'customer/auto-withdrawal',
-      'post',
+      'put',
       {
         currencyId: currencyId,
         isAutoWithdrawal: !isAutoWithdrawalRequest,
@@ -122,7 +122,7 @@ export default function BalanceScreen({ route, navigation }) {
     setIsAutoConversion(!isAutoConversion);
     let result = await httpRequest(
       'customer/auto-conversion',
-      'post',
+      'put',
       { currencyId: currencyId, isAutoConversion: !isAutoConversion },
       true,
       setIsLoading
@@ -137,7 +137,7 @@ export default function BalanceScreen({ route, navigation }) {
     setIsPrimary(!isPrimary);
     let result = await httpRequest(
       'customer/primary-currency',
-      'post',
+      'put',
       { currencyId: currencyId, isPrimary: !isPrimary },
       true,
       setIsLoading
@@ -150,9 +150,9 @@ export default function BalanceScreen({ route, navigation }) {
 
   const onFocus = async () => {
     let balanceData = await httpRequest(
-      'customer/get-balance-detail',
-      'post',
-      { currencyId: currencyId },
+      'customer/get-balance-detail?currencyId=' +  currencyId,
+      'get',
+      null,
       true,
       setIsLoading
     );
@@ -164,9 +164,9 @@ export default function BalanceScreen({ route, navigation }) {
 
     setTransactions(null);
     let transactions = await httpRequest(
-      'customer/get-transaction',
-      'post',
-      { pageNumber: 1, pageSize: 10, currencyId: currencyId },
+      'customer/get-transaction?pageNumber=1&pageSize=10&currencyId=' + currencyId,
+      'get',
+      null,
       true
     );
     if (transactions.success) setTransactions(transactions.data);
@@ -693,7 +693,7 @@ export default function BalanceScreen({ route, navigation }) {
                             text: 'Close',
                             style: 'destructive',
                             onPress: async () => {
-                              let result = await httpRequest('customer/close-balance', 'post', {
+                              let result = await httpRequest('customer/close-balance', 'put', {
                                 currencyId: balanceData.currencyId
                               }, true, setIsLoading);
                               if (result.success) {

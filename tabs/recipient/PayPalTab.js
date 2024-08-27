@@ -44,9 +44,7 @@ null,
   <ItemLoader count={10} />
           </View>
              }
-                  {recipients && recipients.length == 0 && (
-              <NoItemYet desc="No recipient yet" />
-            )}
+           
            {recipients?.map((recipientData, index) => (
               <RecipientItem
                 key={index}

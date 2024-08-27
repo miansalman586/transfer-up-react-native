@@ -103,9 +103,9 @@ export default function TransactionDetailScreen({ route, navigation }) {
 
   const onFocus = async () => {
     let transactionData = await httpRequest(
-      'customer/get-transaction-detail',
-      'post',
-      { transactionId: transactionId },
+      'customer/get-transaction-detail?transactionId=' + transactionId,
+      'get',
+      null,
       true,
       setIsLoading
     );
@@ -764,7 +764,7 @@ showToast('Copied!');
         handleContinuePressOut();
         let result = await httpRequest(
           'customer/update-customer-transaction-status',
-          'post',
+          'put',
           {
             transactionId: transactionId,
             transactionStatusId: 2,
