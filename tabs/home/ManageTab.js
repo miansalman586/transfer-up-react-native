@@ -36,6 +36,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useState, useEffect } from 'react';
 
 import httpRequest from '../../utils/httpRequest';
+import ItemLoader from '../../components/ItemLoader';
 
 export default function ManageTab({ route, navigation }) {
   const [toastVisible, setToastVisible] = useState(false);
@@ -144,7 +145,7 @@ export default function ManageTab({ route, navigation }) {
     setIsNotificationsPressed(true);
   };
 
-  const handleNotificationsRelease = () => {
+  const handleNotificationsPressOut = () => {
     setIsNotificationsPressed(false);
   };
 
@@ -164,33 +165,20 @@ export default function ManageTab({ route, navigation }) {
             height: '100%',
             backgroundColor: '#13150F',
           }}>
-          <CustomToast
-            message={toastNessage}
-            visible={toastVisible}
-            onClose={closeToast}
-          />
           <View
             style={{
               height: '13%',
               flexDirection: 'row',
               alignItems: 'center',
               marginRight: 20,
+              marginLeft: 'auto',
             }}>
-            <View
-              style={{ marginLeft: 'auto', marginTop: 40, marginRight: 10 }}>
-              <PressableButton
-                text="Details"
-                onPress={() => {
-                  navigation.navigate('Profile');
-                }}
-              />
-            </View>
             <Pressable
               onPress={() => {
-                navigation.navigate('Notification');
+
               }}
               onPressIn={handleNotificationsPressIn}
-              onPressOut={handleNotificationsRelease}
+              onPressOut={handleNotificationsPressOut}
               style={{ marginTop: 40 }}>
               <Ionicons
                 name="notifications-outline"
@@ -278,12 +266,7 @@ export default function ManageTab({ route, navigation }) {
                   color: 'white',
                   fontSize: 16,
                 }}>
-                Your{' '}
-                {global.entityId == 1
-                  ? 'Merchant Account'
-                  : global.entityId == 2
-                  ? 'Customer Account'
-                  : ''}
+               Your customer account
               </Text>
             </View>
             <View style={{ marginLeft: 20, marginTop: 40 }}>
@@ -300,7 +283,7 @@ export default function ManageTab({ route, navigation }) {
               }}></View>
             {!otherUserAccount && (
               <View style={{ flex: 'row' }}>
-                <ContentLoad count={1} />
+                <ItemLoader count={1} />
               </View>
             )}
             {otherUserAccount && (
@@ -558,63 +541,6 @@ export default function ManageTab({ route, navigation }) {
                 marginRight: 20,
                 borderColor: '#2A2C29',
               }}></View>
-            <Pressable
-              onPressIn={handleReportsPressIn}
-              onPressOut={handleReportsRelease}
-              style={{
-                paddingLeft: 20,
-                paddingTop: 15,
-                paddingBottom: 20,
-                paddingRight: 20,
-                backgroundColor: isReportsPressed ? '#2A2C29' : '#13150F',
-              }}
-              onPress={() => {
-                navigation.navigate('StatementsReports');
-              }}>
-              <View style={{ flexDirection: 'row' }}>
-                <View
-                  style={{
-                    width: 55,
-                    height: 55,
-                    borderRadius: 27.5,
-                    marginRight: 20,
-                    backgroundColor: '#2A2C29',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <MaterialCommunityIcons
-                    size={26}
-                    color="white"
-                    name="file-document-multiple-outline"
-                  />
-                </View>
-                <View
-                  style={{
-                    marginTop: 3,
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}>
-                  <View>
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 18,
-                        marginTop: 15,
-                      }}>
-                      Statements and reports
-                    </Text>
-                  </View>
-                  <View style={{ marginTop: 15 }}>
-                    <Entypo
-                      name="chevron-right"
-                      size={26}
-                      color={isReportsPressed ? 'white' : '#2a80b9'}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Pressable>
             <Pressable
               onPressIn={handleSettingsPressIn}
               onPressOut={handleSettingsRelease}

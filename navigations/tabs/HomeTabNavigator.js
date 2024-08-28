@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import HomeTab from '../../tabs/home/HomeTab';
 import RecipientTabNavigator from '../tabs/RecipientTabNavigator';
+import ManageTab from '../../tabs/home/ManageTab';
 
 const Tab = createBottomTabNavigator();
 
@@ -62,6 +63,7 @@ function TabBarCustom({ navigation, currentScreen, setCurrentScreen }) {
         <Pressable
           style={{ alignItems: 'center', flex: 1 }}
           onPress={() => {
+            navigation.navigate('Manage');
             setCurrentScreen('Manage');
           }}>
           <FontAwesome5
@@ -106,6 +108,13 @@ export default function HomeTabNavigator() {
       <Tab.Screen
         name="Recipient"
         component={RecipientTabNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
+         <Tab.Screen
+        name="Manage"
+        component={ManageTab}
         options={{
           headerShown: false,
         }}

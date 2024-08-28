@@ -1,15 +1,32 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, Dimensions } from 'react-native';
 import { useState } from 'react';
 
 import InputSearch from '../../components/InputSearch';
 
 import PayPalTab from '../../tabs/recipient/PayPalTab';
+import httpRequest from '../../utils/httpRequest';
+
+import {useEffect} from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Tab = createMaterialTopTabNavigator();
 
 function TabBarCustom({ navigation, currentScreen, setCurrentScreen }) {
   const [isAddPressed, setIsAddPressed] = useState(false);
+
+  const [transferTypes, setTransferTypes ] = useState(null);
+
+  const getTransferTypes = async ()=>{
+let result = await httpRequest('customer/get-recipient-transfer-type', 'get', null, true, null);
+if (result.success) {
+  setTransferTypes(result.data);
+}
+  };
+
+  useEffect(() => {
+    getTransferTypes();
+  }, []);
 
   const handleAddPressIn = () => {
     setIsAddPressed(true);
@@ -67,28 +84,48 @@ function TabBarCustom({ navigation, currentScreen, setCurrentScreen }) {
       </Text>
       <InputSearch searchData={(value) => {}} />
       <View style={{ marginBottom: -70, flexDirection: 'row' }}>
-        <TouchableOpacity
-          onPress={() => {}}
-          activeOpacity={0.5}
-          style={{
-            alignItems: 'center',
-            paddingTop: 25,
-            paddingBottom: 20,
-            marginLeft: 20,
-            marginRight:20,
-            flex: 1,
-            borderBottomColor: currentScreen == 'PayPal' ? '#2a80b9' : '#2A2C29',
-            borderBottomWidth: 2,
-          }}>
-          <Text
-            style={{
-              color: currentScreen == 'PayPal' ? '#2a80b9' : 'white',
-              fontSize: 18,
-              fontWeight: currentScreen == 'PayPal' ? 'bold' : '',
-            }}>
-            PayPal
-          </Text>
-        </TouchableOpacity>
+      <ScrollView contentContainerStyle={{
+     
+        }} showsHorizontalScrollIndicator={false}
+        horizontal={true}>
+         <View style={{flexDirection: 'row'}}>
+
+         
+      {transferTypes?.map((transferType, index) => (
+     
+
+     
+                         <TouchableOpacity
+                         index={index}
+                         onPress={() => {
+
+                          navigation.navigate('PayPalTab');
+                         }}
+                         activeOpacity={0.5}
+                         style={{
+                           alignItems: 'center',
+                           paddingTop: 25,
+                           paddingBottom: 20,
+                           marginLeft: 20,
+                           width: (Dimensions.get('window').width - 60) / 2,
+                           marginRight: index == transferTypes.length - 1 ? 25 : 0,
+                           borderBottomColor: currentScreen == transferType.transferTypeName ? '#2a80b9' : '#2A2C29',
+                           borderBottomWidth: 2,
+                         }}>
+                         <Text
+                           style={{
+                             color: currentScreen == transferType.transferTypeName ? '#2a80b9' : 'white',
+                             fontSize: 18,
+                             fontWeight: currentScreen == transferType.transferTypeName ? 'bold' : '',
+                           }}>
+                           {transferType.transferTypeName}
+                         </Text>
+                       </TouchableOpacity>
+                     
+                    ))}
+                    </View>
+                      </ScrollView>
+                   
       </View>
     </View>
   );
