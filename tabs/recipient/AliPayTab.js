@@ -10,14 +10,14 @@ import NoItemYet from '../../components/NoItemYet';
 
 import httpRequest from '../../utils/httpRequest';
 
-export default function PayPalTab({  navigation }) {
+export default function AliPayTab({  navigation }) {
 const [recipients, setRecipients] = useState(null);
 
 
   const onFocus = async () => {
     setRecipients(null);
     let recipients = await httpRequest(
-      'customer/get-recipient?transferTypeId=2',
+      'customer/get-recipient?transferTypeId=5',
       'get',
 null,
       true,

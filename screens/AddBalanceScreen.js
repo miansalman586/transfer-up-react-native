@@ -55,7 +55,7 @@ export default function AddBalanceScreen({ route, navigation }) {
   };
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
-
+  
   const handleContinuePressIn = () => {
     setIsContinuePressed(true);
   };

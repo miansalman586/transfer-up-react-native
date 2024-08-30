@@ -9,6 +9,7 @@ import httpRequest from '../../utils/httpRequest';
 
 import {useEffect} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
+import AliPayTab from '../../tabs/recipient/AliPayTab';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -98,8 +99,14 @@ if (result.success) {
                          <TouchableOpacity
                          index={index}
                          onPress={() => {
-
-                          navigation.navigate('PayPalTab');
+                            if (transferType.transferTypeId == 2) {
+                              setCurrentScreen('PayPal');
+                              navigation.navigate('PayPalTab');
+                            } else if (transferType.transferTypeId == 5) {
+                              setCurrentScreen('AliPay');
+                              navigation.navigate('AliPayTab');
+                            }
+                        
                          }}
                          activeOpacity={0.5}
                          style={{
@@ -109,14 +116,14 @@ if (result.success) {
                            marginLeft: 20,
                            width: (Dimensions.get('window').width - 60) / 2,
                            marginRight: index == transferTypes.length - 1 ? 25 : 0,
-                           borderBottomColor: currentScreen == transferType.transferTypeName ? '#2a80b9' : '#2A2C29',
+                           borderBottomColor: currentScreen == transferType.transferTypeName.replace(' ', '') ? '#2a80b9' : '#2A2C29',
                            borderBottomWidth: 2,
                          }}>
                          <Text
                            style={{
-                             color: currentScreen == transferType.transferTypeName ? '#2a80b9' : 'white',
+                             color: currentScreen == transferType.transferTypeName.replace(' ', '') ? '#2a80b9' : 'white',
                              fontSize: 18,
-                             fontWeight: currentScreen == transferType.transferTypeName ? 'bold' : '',
+                             fontWeight: currentScreen == transferType.transferTypeName.replace(' ', '') ? 'bold' : '',
                            }}>
                            {transferType.transferTypeName}
                          </Text>
@@ -144,9 +151,16 @@ export default function RecipientTabNavigator() {
           setCurrentScreen={setCurrentScreen}
         />
       )}>
-     <Tab.Screen
+     <Tab.Screen 
         name="PayPalTab"
         component={PayPalTab}
+        options={{
+          headerShown: false,
+        }}
+      />
+        <Tab.Screen
+        name="AliPayTab"
+        component={AliPayTab}
         options={{
           headerShown: false,
         }}
