@@ -13,6 +13,9 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useState, useEffect, useRef } from 'react';
 
 import NoItemYet from '../../components/NoItemYet';
+import { jwtDecode } from "jwt-decode";
+
+import * as SecureStore from 'expo-secure-store';
 
 import TransactionItem from '../../components/TransactionItem';
 import ScreenLoader from '../../components/ScreenLoader';
@@ -69,21 +72,40 @@ export default function HomeTab({ navigation }) {
   };
 
   const onInit = async () => {
-    let currencies = await httpRequest(
+     httpRequest(
       'public/get-currency',
       'get',
       null,
       false
-    );
-    global.currencies = currencies.data;
+    ).then(currencies=>{
+      global.currencies = currencies.data;
+    });
 
-    let transferTypes = await httpRequest(
+     httpRequest(
       'public/get-transfer-type',
       'get',
       null,
       false
-    );
-    global.transferTypes = transferTypes.data;
+    ).then(transferTypes=>{
+      global.transferTypes = transferTypes.data;
+    });
+
+    SecureStore.getItemAsync('JwtToken').then(token=>{
+      const decodedToken = jwtDecode(token);
+      const keys = Object.keys(decodedToken);
+
+      const role = decodedToken[keys[0]];
+      const id = decodedToken[keys[1]];
+      const firstName = decodedToken[keys[2]];
+      const lastName = decodedToken[keys[3]];
+
+      global.user = {
+        role: role,
+        id: id,
+        firstName: firstName,
+        lastName: lastName
+      }
+    })
   };
 
   useEffect(() => {

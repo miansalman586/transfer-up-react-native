@@ -11,6 +11,7 @@ import SendMoneyScreen from '../screens/SendMoneyScreen';
 import AutoWithdrawalRecipientScreen from '../screens/AutoWithdrawalRecipientScreen';
 import AddRecipientScreen from '../screens/recipient/AddRecipientScreen';
 import RecipientDetailScreen from '../screens/recipient/RecipientDetailScreen';
+import SettingsScreen from '../screens/manage/SettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -85,6 +86,14 @@ export default function StackNavigator() {
          <Stack.Screen
           name="RecipientDetail"
           component={RecipientDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
           options={{
             headerShown: false,
           }}

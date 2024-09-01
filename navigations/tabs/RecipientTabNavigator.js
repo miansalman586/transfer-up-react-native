@@ -150,7 +150,11 @@ export default function RecipientTabNavigator() {
           currentScreen={currentScreen}
           setCurrentScreen={setCurrentScreen}
         />
-      )}>
+      )}
+      screenOptions={{
+        swipeEnabled: false, 
+      }}
+      >
      <Tab.Screen 
         name="PayPalTab"
         component={PayPalTab}

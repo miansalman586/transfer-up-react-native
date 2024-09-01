@@ -9,7 +9,6 @@ import BottomSheet from '../../components/BottomSheet';
 
 import RadioButton from '../../components/RadionButton';
 
-import ContentLoad from '../../components/ContentLoad';
 
 import httpRequest from '../../utils/httpRequest';
 import ScreenLoader from '../../components/ScreenLoader';
@@ -21,6 +20,7 @@ import * as MerchantSettingService from '../../services/settings/MerchantSetting
 import * as GlobalService from '../../services/GlobalService';
 
 import { useState, useRef, useEffect } from 'react';
+import ItemLoader from '../../components/ItemLoader';
 
 export default function SettingsScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -202,7 +202,7 @@ export default function SettingsScreen({ navigation }) {
             </Pressable>
             {!appearances && (
               <View style={{ flex: 'row' }}>
-                <ContentLoad count={1} />
+                <ItemLoader count={1} />
               </View>
             )}
             {appearances && (

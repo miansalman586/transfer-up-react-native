@@ -17,6 +17,7 @@ export default function TransactionSreen({ navigation }) {
 
   const getTransactions = async (searchTerm) => {
     setTransactions(null);
+    if (searchTerm) {
     let transactions = await httpRequest(
       'customer/get-transaction?pageNumber=1&pageSize=100&searchTerm=' + searchTerm,
       'get',
@@ -25,6 +26,16 @@ export default function TransactionSreen({ navigation }) {
     );
     if (transactions.success) setTransactions(transactions.data);
     else setTransactions([]);
+  } else {
+    let transactions = await httpRequest(
+      'customer/get-transaction?pageNumber=1&pageSize=100',
+      'get',
+      null,
+      true
+    );
+    if (transactions.success) setTransactions(transactions.data);
+    else setTransactions([]);
+  }
   };
 
   useEffect(() => {

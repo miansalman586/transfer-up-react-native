@@ -1,5 +1,7 @@
 import { Alert } from 'react-native';
 
+import * as SecureStore from 'expo-secure-store';
+
 export default async function httpRequest(
   url,
   method,
@@ -12,8 +14,7 @@ export default async function httpRequest(
 
     let jwt;
     if (auth) {
-      jwt =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI0IiwiZXhwIjoxNzU0NTY1MzIzLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTMzLyIsImF1ZCI6ImxvY2FsaG9zdCJ9.CCH101YfR8XwsEciDFZhD5WShQrjTl9uLbb-KRuPbyw';
+      jwt = await SecureStore.getItemAsync('JwtToken');
     }
 
     let requestBody;
@@ -21,7 +22,7 @@ export default async function httpRequest(
       requestBody = JSON.stringify(body);
     }
 
-    const response = await fetch('http://10.101.56.106/api/' + url, {
+    const response = await fetch('http://10.101.57.31/api/' + url, {
       method: method,
       headers: {
         Authorization: 'Bearer ' + jwt,

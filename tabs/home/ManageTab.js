@@ -85,7 +85,7 @@ export default function ManageTab({ route, navigation }) {
     setIsSettingsPressed(true);
   };
 
-  const handleSettingsRelease = () => {
+  const handleSettingsPressOut = () => {
     setIsSettingsPressed(false);
   };
 
@@ -150,11 +150,8 @@ export default function ManageTab({ route, navigation }) {
   };
 
   useEffect(() => {
-    const onFocusListener = navigation.addListener('focus', onFocus);
+   navigation.addListener('focus', onFocus);
 
-    return () => {
-      onFocusListener()?.remove();
-    };
   }, []);
 
   return (
@@ -182,7 +179,7 @@ export default function ManageTab({ route, navigation }) {
               style={{ marginTop: 40 }}>
               <Ionicons
                 name="notifications-outline"
-                size={32}
+                size={34}
                 color={isNotificationsPressed ? 'white' : '#2a80b9'}
               />
             </Pressable>
@@ -192,43 +189,7 @@ export default function ManageTab({ route, navigation }) {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
-                  pickImage()
-                    .then((img) => {
-                      if (img) {
-                        setImageSize({ width: img.width, height: img.height });
-                        setImageBase64(img.base64);
-                        if (global.entityId == 1) {
-                          httpRequest(
-                            'update-merchant-account',
-                            'post',
-                            {
-                              ProfilePic: img.base64,
-                            },
-                            setIsLoading
-                          ).then((e) => {
-                            if (e.Success) {
-                              setImageUri(img.uri);
-                            }
-                          });
-                        } else if (global.entityId == 2) {
-                          httpRequest(
-                            'update-customer-account',
-                            'post',
-                            {
-                              ProfilePic: img.base64,
-                            },
-                            setIsLoading
-                          ).then((e) => {
-                            if (e.Success) {
-                              setImageUri(img.uri);
-                            }
-                          });
-                        }
-                      }
-                    })
-                    .catch((e) => {
-                      alert(e.toString());
-                    });
+              
                 }}>
                 <Image
                   style={{
@@ -258,7 +219,7 @@ export default function ManageTab({ route, navigation }) {
                   color: 'white',
                   fontSize: 28,
                 }}>
-                {global.fullName}
+                {global.user.firstName + ' ' + global.user.lastName}
               </Text>
               <Text
                 style={{
@@ -270,7 +231,7 @@ export default function ManageTab({ route, navigation }) {
               </Text>
             </View>
             <View style={{ marginLeft: 20, marginTop: 40 }}>
-              <Text style={{ color: 'white' }}>Other accounts</Text>
+              <Text style={{ color: 'white' }}>Other account</Text>
             </View>
             <View
               style={{
@@ -543,7 +504,7 @@ export default function ManageTab({ route, navigation }) {
               }}></View>
             <Pressable
               onPressIn={handleSettingsPressIn}
-              onPressOut={handleSettingsRelease}
+              onPressOut={handleSettingsPressOut}
               style={{
                 paddingLeft: 20,
                 paddingTop: 15,
