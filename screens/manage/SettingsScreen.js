@@ -3,21 +3,15 @@ import GoBackTopBar from '../../components/GoBackTopBar';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-import BottomSheet from '../../components/BottomSheet';
-
-import RadioButton from '../../components/RadionButton';
-
 import ScreenLoader from '../../components/ScreenLoader';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import * as CustomerSettingService from '../../services/settings/CustomerSettingService';
-import * as MerchantSettingService from '../../services/settings/MerchantSettingService';
-import * as GlobalService from '../../services/GlobalService';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { useState, useRef, useEffect } from 'react';
-import ItemLoader from '../../components/ItemLoader';
+import httpRequest from '../../utils/httpRequest';
 
 export default function SettingsScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +24,16 @@ export default function SettingsScreen({ navigation }) {
 
   const handleReportBugPressOut = () => {
     setIsReportBugPressed(false);
+  };
+
+  const [isOurStoryPressed, setIsOurStoryPressed] = useState(false);
+
+  const handleOurStoryPressIn = () => {
+    setIsOurStoryPressed(true);
+  };
+
+  const handleOurStoryPressOut = () => {
+    setIsOurStoryPressed(false);
   };
 
   const [isRateUsPressed, setIsRateUsPressed] = useState(false);
@@ -180,8 +184,32 @@ export default function SettingsScreen({ navigation }) {
                 paddingRight: 20,
                 backgroundColor: isCloserAccountPressed ? '#2A2C29' : '#13150F',
               }}
-              onPress={() => {
-             
+              onPress={async () => {
+                Alert.alert(
+                  'Confirmation',
+                  'Are you sure you want to close this account?',
+                  [
+                    {
+                      text: 'Close',
+                      style: 'destructive',
+                      onPress: async () => {
+                     
+                let result = await httpRequest('customer/update-account-status', 'put', {
+                  accountStatusId: 4
+                }, true, setIsLoading);
+                if (result.success) {
+
+                }
+                      },
+                    },
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                  ]
+                );
+
+
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View
@@ -367,6 +395,65 @@ export default function SettingsScreen({ navigation }) {
                 </View>
               </View>
             </Pressable>
+            
+            <Pressable
+              onPressIn={handleOurStoryPressIn}
+              onPressOut={handleOurStoryPressOut}
+              style={{
+                paddingLeft: 20,
+                paddingTop: 15,
+                paddingBottom: 20,
+                paddingRight: 20,
+                backgroundColor: isOurStoryPressed ? '#2A2C29' : '#13150F',
+              }}
+              onPress={() => {
+                
+              }}>
+              <View style={{ flexDirection: 'row' }}>
+                <View
+                  style={{
+                    width: 55,
+                    height: 55,
+                    borderRadius: 27.5,
+                    marginRight: 20,
+                    backgroundColor: '#2A2C29',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Ionicons
+                    name="book-outline"
+                    size={28}
+                    color="white"
+                  />
+                </View>
+                <View
+                  style={{
+                    marginTop: 3,
+                    flex: 1,
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                  }}>
+                  <View>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginTop: 15,
+                      }}>
+                      Our story
+                    </Text>
+                  </View>
+                  <View style={{ marginTop: 15 }}>
+                    <Entypo
+                      name="chevron-right"
+                      size={26}
+                      color={isOurStoryPressed ? 'white' : '#2a80b9'}
+                    />
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+
           </ScrollView>
         </View>
       )}

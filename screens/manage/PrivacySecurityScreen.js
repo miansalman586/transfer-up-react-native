@@ -22,6 +22,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { useState, useEffect, useRef } from 'react';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import httpRequest from '../../utils/httpRequest';
 
 export default function PrivacySecurityScreen({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,16 +45,6 @@ export default function PrivacySecurityScreen({ route, navigation }) {
 
   const handleFindMeByPressOut = () => {
     setIsFindMeByPressed(false);
-  };
-
-  const [isSyncYourContactsPressed, setIsSyncYourContactsPressed] = useState(false);
-
-  const handleSyncYourContactsPressIn = () => {
-    setIsSyncYourContactsPressed(true);
-  };
-
-  const handleSyncYourContactsPressOut = () => {
-    setIsSyncYourContactsPressed(false);
   };
 
   const [isChangePasswordPressed, setIsChangePasswordPressed] = useState(false);
@@ -195,7 +186,10 @@ navigation.addListener('focus', onFocus);
                 backgroundColor: isLogoutPressed ? '#2A2C29' : '#13150F',
               }}
               onPress={async () => {
-           
+                let result = await httpRequest('customer/logout', 'put', null, true, setIsLoading);
+                if (result.success) {
+
+                }
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View
@@ -320,14 +314,12 @@ navigation.addListener('focus', onFocus);
             </Pressable>
 
             <Pressable
-              onPressIn={handleSyncYourContactsPressIn}
-              onPressOut={handleSyncYourContactsPressOut}
               style={{
                 paddingLeft: 20,
                 paddingTop: 15,
                 paddingBottom: 20,
                 paddingRight: 20,
-                backgroundColor: isSyncYourContactsPressed ? '#2A2C29' : '#13150F',
+                backgroundColor:  '#13150F',
               }}
               onPress={() => {
 

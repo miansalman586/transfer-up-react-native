@@ -15,7 +15,7 @@ import * as Clipboard from 'expo-clipboard';
 
 import Entypo from 'react-native-vector-icons/Entypo';
 
-import * as GlobalService from '../../services/GlobalService';
+import * as SecureStore from 'expo-secure-store';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -28,6 +28,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useState, useEffect } from 'react';
 
 import ItemLoader from '../../components/ItemLoader';
+
+import CustomToast from '../../components/CustomToast';
 
 export default function ManageTab({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -97,6 +99,20 @@ export default function ManageTab({ route, navigation }) {
     setIsNotificationsPressed(false);
   };
 
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastNessage, setToastMessage] = useState(null);
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setToastVisible(true);
+  };
+
+  const closeToast = () => {
+    setToastVisible(false);
+  };
+
+  
   useEffect(() => {
    navigation.addListener('focus', onFocus);
 
@@ -110,6 +126,11 @@ export default function ManageTab({ route, navigation }) {
             height: '100%',
             backgroundColor: '#13150F',
           }}>
+             <CustomToast
+            message={toastNessage}
+            visible={toastVisible}
+            onClose={closeToast}
+          />
           <View
             style={{
               height: '13%',
@@ -373,7 +394,7 @@ export default function ManageTab({ route, navigation }) {
                 backgroundColor: isLogoutPressed ? '#2A2C29' : '#13150F',
               }}
               onPress={async () => {
-                await GlobalService.logout(navigation, global.entityId);
+                await SecureStore.deleteItemAsync('JwtToken');
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View
