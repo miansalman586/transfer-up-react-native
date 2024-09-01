@@ -3,27 +3,19 @@ import {
   Text,
   Pressable,
   Image,
-  Alert,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { RootSiblingParent } from 'react-native-root-siblings';
 import ScreenLoader from '../../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import CustomToast from '../../components/CustomToast';
 import PressableButton from '../../components/PressableButton';
 
 import * as Clipboard from 'expo-clipboard';
 
 import Entypo from 'react-native-vector-icons/Entypo';
-import * as SecureStore from 'expo-secure-store';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as GlobalService from '../../services/GlobalService';
-
-import * as CustomerService from '../../services/user/CustomerService';
-import * as MerchantService from '../../services/user/MerchantService';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -35,38 +27,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useState, useEffect } from 'react';
 
-import httpRequest from '../../utils/httpRequest';
 import ItemLoader from '../../components/ItemLoader';
 
 export default function ManageTab({ route, navigation }) {
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastNessage, setToastMessage] = useState(null);
-
-  const showToast = (message) => {
-    setToastMessage(message);
-    setToastVisible(true);
-  };
-
-  const closeToast = () => {
-    setToastVisible(false);
-  };
-  const [otherUserAccount, setOtherUserAccount] = useState(null);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const onFocus = async () => {
-    setOtherUserAccount(null);
-    if (global.entityId == 1) {
-      let result = await MerchantService.getOtherCustomerAccount(navigation);
-
-      if (result.Data) setOtherUserAccount(result.Data);
-      else setOtherUserAccount({});
-    } else if (global.entityId == 2) {
-      let result = await CustomerService.getOtherCustomerAccount(navigation);
-
-      if (result.Data) setOtherUserAccount(result.Data);
-      else setOtherUserAccount({});
-    }
   };
 
   const [isOtherAccountPressed, setIsOtherAccountPressed] = useState(false);
@@ -89,15 +55,6 @@ export default function ManageTab({ route, navigation }) {
     setIsSettingsPressed(false);
   };
 
-  const [isReportsPressed, setIsReportsPressed] = useState(false);
-
-  const handleReportsPressIn = () => {
-    setIsReportsPressed(true);
-  };
-
-  const handleReportsRelease = () => {
-    setIsReportsPressed(false);
-  };
 
   const [isHelpPressed, setIsHelpPressed] = useState(false);
 
@@ -109,15 +66,6 @@ export default function ManageTab({ route, navigation }) {
     setIsHelpPressed(false);
   };
 
-  const [isPrivacyPressed, setIsPrivacyPressed] = useState(false);
-
-  const handlePrivacyPressIn = () => {
-    setIsPrivacyPressed(true);
-  };
-
-  const handlePrivacyRelease = () => {
-    setIsPrivacyPressed(false);
-  };
 
   const [isAgreementsPressed, setIsAgreementsPressed] = useState(false);
 
@@ -179,7 +127,7 @@ export default function ManageTab({ route, navigation }) {
               style={{ marginTop: 40 }}>
               <Ionicons
                 name="notifications-outline"
-                size={34}
+                size={32}
                 color={isNotificationsPressed ? 'white' : '#2a80b9'}
               />
             </Pressable>
@@ -242,254 +190,11 @@ export default function ManageTab({ route, navigation }) {
                 marginRight: 20,
                 borderColor: '#2A2C29',
               }}></View>
-            {!otherUserAccount && (
+           
               <View style={{ flex: 'row' }}>
                 <ItemLoader count={1} />
               </View>
-            )}
-            {otherUserAccount && (
-              <Pressable
-                onPressIn={handleOtherAccountPressIn}
-                onPressOut={handleOtherAccountRelease}
-                style={{
-                  paddingLeft: 20,
-                  paddingTop: 15,
-                  paddingBottom: 20,
-                  paddingRight: 20,
-                  backgroundColor: isOtherAccountPressed
-                    ? '#2A2C29'
-                    : '#13150F',
-                }}
-                onPress={() => {
-                  handleOtherAccountRelease();
-
-                  if (global.entityId == 1) {
-                    if (
-                      !(otherUserAccount.FirstName && otherUserAccount.LastName)
-                    ) {
-                      httpRequest(
-                        'open-other-customer-account',
-                        'get',
-                        null,
-                        setIsLoading,
-                        true,
-                        navigation
-                      ).then((data) => {
-                        if (data.Success) {
-                          httpRequest(
-                            'authenticate-other-customer',
-                            'get',
-                            null,
-                            setIsLoading,
-                            true,
-                            navigation
-                          ).then(async (data) => {
-                            if (
-                              data.Success &&
-                              data.StatusCode == 200 &&
-                              data.Data.AccountStatusId != 7
-                            ) {
-                              await SecureStore.setItemAsync(
-                                'JwtToken',
-                                data.Data.JwtToken
-                              );
-                              navigation.navigate('Home');
-                            } else if (
-                              result.Success &&
-                              result.StatusCode == 200 &&
-                              result.Data.AccountStatusId == 7
-                            ) {
-                              Alert.alert('Error', result.Data.BlockedReason);
-                            } else {
-                              Alert.alert('Error', data.Message);
-                            }
-                          });
-                        }
-                      });
-                    } else {
-                      httpRequest(
-                        'authenticate-other-customer',
-                        'get',
-                        null,
-                        setIsLoading,
-                        true,
-                        navigation
-                      ).then(async (data) => {
-                        if (
-                          data.Success &&
-                          data.StatusCode == 200 &&
-                          data.Data.AccountStatusId != 7
-                        ) {
-                          await SecureStore.setItemAsync(
-                            'JwtToken',
-                            data.Data.JwtToken
-                          );
-                          navigation.navigate('Home');
-                        } else if (
-                          result.Success &&
-                          result.StatusCode == 200 &&
-                          result.Data.AccountStatusId == 7
-                        ) {
-                          Alert.alert('Error', result.Data.BlockedReason);
-                        } else {
-                          Alert.alert('Error', data.Message);
-                        }
-                      });
-                    }
-                  } else if (global.entityId == 2) {
-                    if (
-                      !(otherUserAccount.FirstName && otherUserAccount.LastName)
-                    ) {
-                      httpRequest(
-                        'open-other-merchant-account',
-                        'get',
-                        null,
-                        setIsLoading,
-                        true,
-                        navigation
-                      ).then((data) => {
-                        if (data.Success) {
-                          httpRequest(
-                            'authenticate-other-merchant',
-                            'get',
-                            null,
-                            setIsLoading,
-                            true,
-                            navigation
-                          ).then(async (data) => {
-                            if (
-                              data.Success &&
-                              data.StatusCode == 200 &&
-                              data.Data.AccountStatusId != 7
-                            ) {
-                              await SecureStore.setItemAsync(
-                                'JwtToken',
-                                data.Data.JwtToken
-                              );
-                              navigation.navigate('Home');
-                            } else if (
-                              result.Success &&
-                              result.StatusCode == 200 &&
-                              result.Data.AccountStatusId == 7
-                            ) {
-                              Alert.alert('Error', result.Data.BlockedReason);
-                            } else {
-                              Alert.alert('Error', data.Message);
-                            }
-                          });
-                        }
-                      });
-                    } else {
-                      httpRequest(
-                        'authenticate-other-merchant',
-                        'get',
-                        null,
-                        setIsLoading,
-                        true,
-                        navigation
-                      ).then(async (data) => {
-                        if (
-                          data.Success &&
-                          data.StatusCode == 200 &&
-                          data.Data.AccountStatusId != 7
-                        ) {
-                          await SecureStore.setItemAsync(
-                            'JwtToken',
-                            data.Data.JwtToken
-                          );
-                          navigation.navigate('Home');
-                        } else if (
-                          result.Success &&
-                          result.StatusCode == 200 &&
-                          result.Data.AccountStatusId == 7
-                        ) {
-                          Alert.alert('Error', result.Data.BlockedReason);
-                        } else {
-                          Alert.alert('Error', data.Message);
-                        }
-                      });
-                    }
-                  }
-                }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <View
-                    style={{
-                      width: 55,
-                      height: 55,
-                      borderRadius: 27.5,
-                      marginRight: 20,
-                      backgroundColor: '#2A2C29',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    {otherUserAccount?.FirstName && otherUserAccount?.LastName && (
-                      <Image
-                        style={{ width: 55, height: 55, borderRadius: 27.5 }}
-                        source={{
-                          uri: otherUserAccount?.ProfilePic,
-                        }}
-                      />
-                    )}
-                    {!otherUserAccount?.FirstName &&
-                      !otherUserAccount?.LastName && (
-                        <Icon name={'plus'} size={27.5} color="white" />
-                      )}
-                  </View>
-                  <View
-                    style={{
-                      marginTop: 3,
-                      flex: 1,
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                    }}>
-                    <View>
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontSize: 18,
-                          marginTop: !(
-                            otherUserAccount.FirstName &&
-                            otherUserAccount.LastName
-                          )
-                            ? 15
-                            : 0,
-                        }}>
-                        {otherUserAccount.FirstName && otherUserAccount.LastName
-                          ? otherUserAccount.FirstName +
-                            ' ' +
-                            otherUserAccount.LastName
-                          : global.entityId == 1
-                          ? 'Open customer account'
-                          : global.entityId == 2
-                          ? 'Open merchant account'
-                          : ''}
-                      </Text>
-                      {otherUserAccount.FirstName && otherUserAccount.LastName && (
-                        <Text
-                          style={{
-                            color: 'white',
-                            fontSize: 14,
-                            marginTop: 10,
-                          }}>
-                          {global.entityId == 1
-                            ? 'Your customer account'
-                            : global.entityId == 2
-                            ? 'Your merchant account'
-                            : ''}
-                        </Text>
-                      )}
-                    </View>
-                    <View style={{ marginTop: 15 }}>
-                      <Entypo
-                        name="chevron-right"
-                        size={26}
-                        color={isOtherAccountPressed ? 'white' : '#2a80b9'}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            )}
+          
             <View style={{ marginLeft: 20, marginTop: 40 }}>
               <Text style={{ color: 'white' }}>General</Text>
             </View>
@@ -601,62 +306,6 @@ export default function ManageTab({ route, navigation }) {
                       name="chevron-right"
                       size={26}
                       color={isHelpPressed ? 'white' : '#2a80b9'}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Pressable>
-            <Pressable
-              onPressIn={handlePrivacyPressIn}
-              onPressOut={handlePrivacyRelease}
-              style={{
-                paddingLeft: 20,
-                paddingTop: 15,
-                paddingBottom: 20,
-                paddingRight: 20,
-                backgroundColor: isPrivacyPressed ? '#2A2C29' : '#13150F',
-              }}
-              onPress={() => {
-                navigation.navigate('PrivacySecurity', {
-                  isToast: false,
-                  toastMessage: null,
-                });
-              }}>
-              <View style={{ flexDirection: 'row' }}>
-                <View
-                  style={{
-                    width: 55,
-                    height: 55,
-                    borderRadius: 27.5,
-                    marginRight: 20,
-                    backgroundColor: '#2A2C29',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <MaterialIcons size={27.5} color="white" name="security" />
-                </View>
-                <View
-                  style={{
-                    marginTop: 3,
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}>
-                  <View>
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 18,
-                        marginTop: 15,
-                      }}>
-                      Privacy and security
-                    </Text>
-                  </View>
-                  <View style={{ marginTop: 15 }}>
-                    <Entypo
-                      name="chevron-right"
-                      size={26}
-                      color={isPrivacyPressed ? 'white' : '#2a80b9'}
                     />
                   </View>
                 </View>
@@ -785,11 +434,7 @@ export default function ManageTab({ route, navigation }) {
                     text="Copy"
                     onPress={async () => {
                       await Clipboard.setStringAsync(
-                        global.entityId == 1
-                          ? 'M' + global.userId
-                          : global.entityId == 2
-                          ? 'C' + global.userId
-                          : ''
+                       'C' + global.user.id
                       );
 
                       showToast('Copied!');
@@ -798,11 +443,7 @@ export default function ManageTab({ route, navigation }) {
                 </View>
               </View>
               <Text style={{ color: 'white', fontSize: 14 }}>
-                {global.entityId == 1
-                  ? 'M' + global.userId
-                  : global.entityId == 2
-                  ? 'C' + global.userId
-                  : ''}
+                {'C' + global.user.id}
               </Text>
               <Text
                 style={{

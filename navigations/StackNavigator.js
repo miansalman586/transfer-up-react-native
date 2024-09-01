@@ -12,6 +12,7 @@ import AutoWithdrawalRecipientScreen from '../screens/AutoWithdrawalRecipientScr
 import AddRecipientScreen from '../screens/recipient/AddRecipientScreen';
 import RecipientDetailScreen from '../screens/recipient/RecipientDetailScreen';
 import SettingsScreen from '../screens/manage/SettingsScreen';
+import PrivacySecurityScreen from '../screens/manage/PrivacySecurityScreen';
 
 const Stack = createStackNavigator();
 
@@ -94,6 +95,14 @@ export default function StackNavigator() {
 <Stack.Screen
           name="Settings"
           component={SettingsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="PrivacySecurity"
+          component={PrivacySecurityScreen}
           options={{
             headerShown: false,
           }}
