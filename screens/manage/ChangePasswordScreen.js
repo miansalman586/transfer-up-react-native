@@ -1,21 +1,19 @@
 import { View, TextInput, ScrollView, Text, Pressable } from 'react-native';
-import GoBackTopBar from '../../../components/GoBackTopBar';
+
+import GoBackTopBar from '../../components/GoBackTopBar';
 
 import { useState } from 'react';
 
-import ScreenLoader from '../../../components/ScreenLoader';
+import ScreenLoader from '../../components/ScreenLoader';
 
-import * as CustomerService from '../../../services/user/CustomerService';
-import * as MerchantService from '../../../services/user/MerchantService';
-import * as GlobalService from '../../../services/GlobalService';
-
-import ErrorMessage from '../../../components/ErrorMessage';
-
-import CustomToast from '../../../components/CustomToast';
+import ErrorMessage from '../../components/ErrorMessage';
 
 import Entypo from 'react-native-vector-icons/Entypo';
+import httpRequest from '../../utils/httpRequest';
 
-export default function ChangePasswordScreen({ navigation }) {
+export default function ChangePasswordScreen({ route, navigation }) {
+const {showToast} = route.params;
+
   const [isCurrentPasswordPressed, setIsCurrentPasswordPressed] =
     useState(false);
 
@@ -23,7 +21,7 @@ export default function ChangePasswordScreen({ navigation }) {
     setIsCurrentPasswordPressed(true);
   };
 
-  const handleOCurrentPasswordRelease = () => {
+  const handleOCurrentPasswordRPressOut = () => {
     setIsCurrentPasswordPressed(false);
   };
 
@@ -33,7 +31,7 @@ export default function ChangePasswordScreen({ navigation }) {
     setIsNewPasswordPressed(true);
   };
 
-  const handleONewPasswordRelease = () => {
+  const handleONewPasswordPressOut = () => {
     setIsNewPasswordPressed(false);
   };
 
@@ -64,35 +62,20 @@ export default function ChangePasswordScreen({ navigation }) {
     setIsCurrentPasswordInputFocused(false);
 
     if (currentPasswordInputValue) {
-      if (global.entityId == 1) {
-        let data = await MerchantService.verifyPassword(
-          currentPasswordInputValue,
-          setIsLoading,
-          navigation
-        );
-        if (data.Success) {
-          setIsCurrentPasswordErrorInput(false);
-        } else {
-          setIsCurrentPasswordErrorInput(true);
-        }
-      } else if (global.entityId == 2) {
-        let data = await CustomerService.verifyPassword(
-          currentPasswordInputValue,
-          setIsLoading,
-          navigation
-        );
-        if (data.Success) {
-          setIsCurrentPasswordErrorInput(false);
-        } else {
-          setIsCurrentPasswordErrorInput(true);
-        }
+      let result = await httpRequest('customer/verify-password?password=' + currentPasswordInputValue, 'get', null, true, setIsLoading);
+      if (result.status == 200) {
+        setIsCurrentPasswordErrorInput(false);
+      } else {
+        setIsCurrentPasswordErrorInput(true);
       }
     }
   };
   const handleNewPasswordFocus = () => setIsNewPasswordInputFocused(true);
   const handleNewPasswordBlur = () => setIsNewPasswordInputFocused(false);
   const handleContinuePressIn = () => setIsContinuePressed(true);
-  const handleContinueRelease = () => setIsContinuePressed(false);
+  const handleContinuePressOut = () => setIsContinuePressed(false);
+
+  
 
   const isStrongPassword = (password) => {
     if (!password || password.trim().length < 8) {
@@ -114,62 +97,15 @@ export default function ChangePasswordScreen({ navigation }) {
   };
 
   const handleContinue = async () => {
-    if (global.settings.AppSecurityId == 2) {
-      navigation.navigate('UnlockPasscode2', {
-        callBack: async (
-          passcode,
-          setIsLoading,
-          setIsErrorPasscode,
-          errorCount,
-          setErrorCount
-        ) => {
-          if (global.entityId == 1) {
-            let data = await MerchantService.changePassword(
-              currentPasswordInputValue,
-              newPasswordInputValue,
-              passcode,
-              setIsLoading,
-              navigation
-            );
-            if (data.Success) {
-              navigation.navigate('PrivacySecurity', {
-                isToast: true,
-                toastMessage: 'Password updated!',
-              });
-            } else {
-              setIsErrorPasscode(true);
+    handleContinuePressOut();
 
-              if (errorCount >= 3) {
-                await GlobalService.logout(navigation, global.entityId);
-              }
-
-              setErrorCount(errorCount + 1);
-            }
-          } else if (global.entityId == 2) {
-            let data = await CustomerService.changePassword(
-              currentPasswordInputValue,
-              newPasswordInputValue,
-              passcode,
-              setIsLoading,
-              navigation
-            );
-            if (data.Success) {
-              navigation.navigate('PrivacySecurity', {
-                isToast: true,
-                toastMessage: 'Password updated!',
-              });
-            } else {
-              setIsErrorPasscode(true);
-
-              if (errorCount >= 3) {
-                await GlobalService.logout(navigation, global.entityId);
-              }
-
-              setErrorCount(errorCount + 1);
-            }
-          }
-        },
-      });
+    let result = await httpRequest('customer/change-password', 'put', {
+      password: newPasswordInputValue,
+      oldPassword: currentPasswordInputValue
+    }, true, setIsLoading);
+    if (result.status == 200) {
+      navigation.goBack();
+      showToast('Password has been updated.');
     }
   };
 
@@ -235,7 +171,7 @@ export default function ChangePasswordScreen({ navigation }) {
                   />
                   <Pressable
                     onPressIn={handleCurrentPasswordPressIn}
-                    onPressOut={handleOCurrentPasswordRelease}
+                    onPressOut={handleOCurrentPasswordRPressOut}
                     onPress={() => {
                       setCurrentPasswordSecureTextEntry(
                         !currentPasswordSecureTextEntry
@@ -312,7 +248,7 @@ export default function ChangePasswordScreen({ navigation }) {
                   />
                   <Pressable
                     onPressIn={handleNewPasswordPressIn}
-                    onPressOut={handleONewPasswordRelease}
+                    onPressOut={handleONewPasswordPressOut}
                     onPress={() => {
                       setNewPasswordSecureTextEntry(
                         !newPasswordSecureTextEntry
@@ -349,7 +285,7 @@ export default function ChangePasswordScreen({ navigation }) {
           </ScrollView>
           <Pressable
             onPressIn={handleContinuePressIn}
-            onPressOut={handleContinueRelease}
+            onPressOut={handleContinuePressOut}
             onPress={handleContinue}
             disabled={
               isNewPasswordErrorInput ||

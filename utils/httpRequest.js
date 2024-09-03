@@ -12,7 +12,7 @@ export default async function httpRequest(
   try {
     if (setIsLoading) setIsLoading(true);
 
-    await SecureStore.setItemAsync('JwtToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZ2l2ZW5uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc3VybmFtZSI6InN0cmluZyIsImV4cCI6MjM1NjMwNzIxMn0.GiXyPI0S2izHlbMK3-ZHYO_u9G1skW78VXVzL329VEw')
+    await SecureStore.setItemAsync('JwtToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZ2l2ZW5uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc3VybmFtZSI6InN0cmluZyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN0cmluZyIsImV4cCI6MjM1NjQ4MzAxN30.YQTzdFH0abt6k1nv9Vt3YkbfQ5tcLr5EP7OZiTY86R4')
 
     let jwt;
     if (auth) {
@@ -24,7 +24,7 @@ export default async function httpRequest(
       requestBody = JSON.stringify(body);
     }
 
-    const response = await fetch('http://10.101.57.31/api/' + url, {
+    const response = await fetch('http://10.101.133.228/api/' + url, {
       method: method,
       headers: {
         Authorization: 'Bearer ' + jwt,
@@ -33,11 +33,9 @@ export default async function httpRequest(
       body: requestBody,
     });
 
-    const data = await response.json();
-
     if (setIsLoading) setIsLoading(false);
 
-    return data;
+    return response;
   } catch (error) {
     if (setIsLoading) setIsLoading(false);
 

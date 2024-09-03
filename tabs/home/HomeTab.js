@@ -25,6 +25,7 @@ import BottomSheet from '../../components/BottomSheet';
 import ItemLoader from '../../components/ItemLoader';
 import BalanceCard from '../../components/BalanceCard';
 import httpRequest from '../../utils/httpRequest';
+import { updateSetting } from '../../utils/common';
 
 export default function HomeTab({ navigation }) {
   const [balances, setBalances] = useState(null);
@@ -55,9 +56,10 @@ export default function HomeTab({ navigation }) {
   const onFocus = async () => {
     setBalances(null);
     let balances = await httpRequest('customer/get-balance', 'get', null, true);
-    if (balances.success) {
-      setBalances(balances.data);
-      global.balances = balances.data;
+    balances = await balances.json();
+    if (balances) {
+      setBalances(balances);
+      global.balances = balances;
     } else setBalances([]);
 
     setTransactions(null);
@@ -67,8 +69,20 @@ export default function HomeTab({ navigation }) {
       null,
       true
     );
-    if (transactions.success) setTransactions(transactions.data);
+    transactions = await transactions.json();
+    if (transactions) setTransactions(transactions);
     else setTransactions([]);
+
+    httpRequest(
+      'customer/get-setting',
+      'get',
+      null,
+      true
+    ).then(async result=>{
+
+     let setting = await result.json();
+     await updateSetting(setting);
+    });
   };
 
   const onInit = async () => {
@@ -89,6 +103,8 @@ export default function HomeTab({ navigation }) {
     ).then(transferTypes=>{
       global.transferTypes = transferTypes.data;
     });
+
+  
 
     SecureStore.getItemAsync('JwtToken').then(token=>{
       const decodedToken = jwtDecode(token);

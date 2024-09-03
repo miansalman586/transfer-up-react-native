@@ -156,11 +156,12 @@ export default function BalanceScreen({ route, navigation }) {
       true,
       setIsLoading
     );
-    setBalanceData(balanceData.data);
+    balanceData= await balanceData.json();
+    setBalanceData(balanceData);
 
-    setIsPrimary(balanceData?.data?.isPrimary);
-    setIsAutoConversion(balanceData?.data?.isAutoConversion);
-    setIsAutoWithdrawalRequest(balanceData?.data?.isAutoWithdrawal);
+    setIsPrimary(balanceData?.isPrimary);
+    setIsAutoConversion(balanceData?.isAutoConversion);
+    setIsAutoWithdrawalRequest(balanceData?.isAutoWithdrawal);
 
     setTransactions(null);
     let transactions = await httpRequest(
@@ -169,7 +170,8 @@ export default function BalanceScreen({ route, navigation }) {
       null,
       true
     );
-    if (transactions.success) setTransactions(transactions.data);
+    transactions = await transactions.json();
+    if (transactions) setTransactions(transactions);
     else setTransactions([]);
   };
 

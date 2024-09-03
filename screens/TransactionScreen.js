@@ -24,7 +24,8 @@ export default function TransactionSreen({ navigation }) {
       null,
       true
     );
-    if (transactions.success) setTransactions(transactions.data);
+    transactions = await transactions.json();
+    if (transactions) setTransactions(transactions);
     else setTransactions([]);
   } else {
     let transactions = await httpRequest(
@@ -33,7 +34,8 @@ export default function TransactionSreen({ navigation }) {
       null,
       true
     );
-    if (transactions.success) setTransactions(transactions.data);
+    transactions = await transactions.json();
+    if (transactions) setTransactions(transactions);
     else setTransactions([]);
   }
   };

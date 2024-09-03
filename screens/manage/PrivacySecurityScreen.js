@@ -13,7 +13,6 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 
 import CustomToast from '../../components/CustomToast';
-
 import ScreenLoader from '../../components/ScreenLoader';
 
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -23,11 +22,48 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useState, useEffect, useRef } from 'react';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import httpRequest from '../../utils/httpRequest';
+import { getSetting, updateSetting } from '../../utils/common';
 
 export default function PrivacySecurityScreen({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [isPrivacyPressed, setIsPrivacyPressed] = useState(false);
+
+const [isSyncPhoneContact, setIsSyncPhoneContact] = useState(false);
+
+const [toastVisible, setToastVisible] = useState(false);
+const [toastNessage, setToastMessage] = useState(null);
+
+const showToast = (message) => {
+  setToastMessage(message);
+  setToastVisible(true);
+};
+
+const closeToast = () => {
+  setToastVisible(false);
+};
+
+
+const setSyncPhoneContact = async () => {
+  setIsSyncPhoneContact(!isSyncPhoneContact);
+
+  setIsSyncPhoneContact(!isSyncPhoneContact);
+  let result = await httpRequest(
+    'customer/update-is-sync-phone-contact',
+    'put',
+    {
+      isSyncPhoneContact: !isSyncPhoneContact,
+    },
+    true,
+    setIsLoading
+  );
+if (result.status == 200) {
+  let setting =  await getSetting();
+  setting.isSyncPhoneContact = !isSyncPhoneContact;
+  await updateSetting(setting);
+  setIsSyncPhoneContact(!isSyncPhoneContact);
+}
+}
 
   const handlePrivacyPressIn = () => {
     setIsPrivacyPressed(true);
@@ -68,7 +104,9 @@ export default function PrivacySecurityScreen({ route, navigation }) {
   };
 
 
-  const onFocus = () => {
+  const onFocus =async () => {
+    let setting=  await getSetting('Setting');
+    setIsSyncPhoneContact(setting?.isSyncPhoneContact);
   };
 
   useEffect(() => {
@@ -84,6 +122,11 @@ navigation.addListener('focus', onFocus);
             height: '100%',
             backgroundColor: '#13150F',
           }}>
+               <CustomToast
+            message={toastNessage}
+            visible={toastVisible}
+            onClose={closeToast}
+          />
           <GoBackTopBar navigation={navigation} />
           <Text
             style={{
@@ -125,7 +168,9 @@ navigation.addListener('focus', onFocus);
                   : '#13150F',
               }}
               onPress={() => {
-                
+                  navigation.navigate('ChangePassword', {
+                    showToast: showToast
+                  });
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View
@@ -368,10 +413,10 @@ navigation.addListener('focus', onFocus);
                   <View style={{ marginTop: 15 }}>
                     <Switch
                       trackColor={{ false: '#2A2C29', true: '#2a80b9' }}
-                      thumbColor={true ? '#13150F' : '#13150F'}
+                      thumbColor={isSyncPhoneContact ? '#13150F' : '#13150F'}
                       ios_backgroundColor="#3e3e3e"
-                      onValueChange={() => {}}
-                      value={true}
+                      onValueChange={setSyncPhoneContact}
+                      value={isSyncPhoneContact}
                     />
                   </View>
                 </View>

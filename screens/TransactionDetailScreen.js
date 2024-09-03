@@ -109,7 +109,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
       true,
       setIsLoading
     );
-    setTransactionData(transactionData.data);
+    transactionData = await transactionData.json();
+    setTransactionData(transactionData);
   };
 
   useEffect(() => {

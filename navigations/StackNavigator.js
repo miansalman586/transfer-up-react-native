@@ -13,6 +13,7 @@ import AddRecipientScreen from '../screens/recipient/AddRecipientScreen';
 import RecipientDetailScreen from '../screens/recipient/RecipientDetailScreen';
 import SettingsScreen from '../screens/manage/SettingsScreen';
 import PrivacySecurityScreen from '../screens/manage/PrivacySecurityScreen';
+import ChangePasswordScreen from '../screens/manage/ChangePasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -103,6 +104,15 @@ export default function StackNavigator() {
 <Stack.Screen
           name="PrivacySecurity"
           component={PrivacySecurityScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        
+<Stack.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
           options={{
             headerShown: false,
           }}
