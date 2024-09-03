@@ -91,8 +91,9 @@ export default function HomeTab({ navigation }) {
       'get',
       null,
       false
-    ).then(currencies=>{
-      global.currencies = currencies.data;
+    ).then(async currencies => {
+      currencies = await currencies.json();
+      global.currencies = currencies;
     });
 
      httpRequest(
@@ -100,8 +101,9 @@ export default function HomeTab({ navigation }) {
       'get',
       null,
       false
-    ).then(transferTypes=>{
-      global.transferTypes = transferTypes.data;
+    ).then(async transferTypes=>{
+      transferTypes = await transferTypes.json();
+      global.transferTypes = transferTypes;
     });
 
   
@@ -114,12 +116,14 @@ export default function HomeTab({ navigation }) {
       const id = decodedToken[keys[1]];
       const firstName = decodedToken[keys[2]];
       const lastName = decodedToken[keys[3]];
+      const emailAddress = decodedToken[keys[4]];
 
       global.user = {
         role: role,
         id: id,
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
+        emailAddress: emailAddress
       }
     })
   };

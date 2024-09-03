@@ -48,7 +48,7 @@ export default function Recipient({ recipient }) {
                 color: 'white',
                 fontSize: 18,
               }}>
-              {recipient.fullName}
+              {recipient.firstName} {recipient.lastName}
             </Text>
           </View>
           <View

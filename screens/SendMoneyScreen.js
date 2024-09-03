@@ -60,8 +60,9 @@ export default function SendMoneyScreen({ route, navigation }) {
     if (transferType.transferTypeId == 4) {
       setRecipient(null);
     let result = await httpRequest('customer/get-transfer-pay-recipient?emailAddress=' + emailAddress, 'get', null, true, null);
-    if (result.data) {
-      setRecipient(result.data);
+    result = await result.json();
+    if (result) {
+      setRecipient(result);
     }  else {
       setRecipient({flag: true});
     }
@@ -361,7 +362,7 @@ navigation.addListener('focus', onFocus);
            </View>
             )}
 
-            {recipient?.fullName && 
+            {recipient?.emailAddress && 
             <Recipient recipient={recipient} />
 
             }

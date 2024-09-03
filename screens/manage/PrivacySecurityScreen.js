@@ -11,6 +11,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomToast from '../../components/CustomToast';
 import ScreenLoader from '../../components/ScreenLoader';
@@ -89,8 +90,18 @@ if (result.status == 200) {
     setIsChangePasswordPressed(true);
   };
 
-  const handleChangePasswordRelease = () => {
+  const handleChangePasswordPressOut = () => {
     setIsChangePasswordPressed(false);
+  };
+
+  const [isChangeEmailAddressPressed, setIsChangeEmailAddressPressed] = useState(false);
+
+  const handleChangeEmailAddressPressIn = () => {
+    setIsChangeEmailAddressPressed(true);
+  };
+
+  const handleChangeEmailAddressPressOut = () => {
+    setIsChangeEmailAddressPressed(false);
   };
 
   const [isLogoutPressed, setIsLogoutPressed] = useState(false);
@@ -157,7 +168,7 @@ navigation.addListener('focus', onFocus);
        
             <Pressable
               onPressIn={handleChangePasswordPressIn}
-              onPressOut={handleChangePasswordRelease}
+              onPressOut={handleChangePasswordPressOut}
               style={{
                 paddingLeft: 20,
                 paddingTop: 15,
@@ -220,6 +231,78 @@ navigation.addListener('focus', onFocus);
                 </View>
               </View>
             </Pressable>
+
+            <Pressable
+              onPressIn={handleChangeEmailAddressPressIn}
+              onPressOut={handleChangeEmailAddressPressOut}
+              style={{
+                paddingLeft: 20,
+                paddingTop: 15,
+                paddingBottom: 20,
+                paddingRight: 20,
+                backgroundColor: isChangeEmailAddressPressed
+                  ? '#2A2C29'
+                  : '#13150F',
+              }}
+              onPress={() => {
+                  navigation.navigate('ChangePassword', {
+                    showToast: showToast
+                  });
+              }}>
+              <View style={{ flexDirection: 'row' }}>
+                <View
+                  style={{
+                    width: 55,
+                    height: 55,
+                    borderRadius: 27.5,
+                    marginRight: 20,
+                    flexDirection: 'row',
+                    backgroundColor: '#2A2C29',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                      <MaterialCommunityIcons
+                      name="email-open-outline"
+                      size={32}
+                      color="white"
+                    />
+                </View>
+                <View
+                  style={{
+                    marginTop: 3,
+                    flex: 1,
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                  }}>
+                  <View>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 18,
+                      }}>
+                      Change email address
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 14,
+                        marginTop: 10,
+                      }}>
+                    {global.user?.emailAddress}
+                    </Text>
+                  </View>
+                  <View style={{ marginTop: 15 }}>
+                    <Entypo
+                      name="chevron-right"
+                      size={26}
+                      color={isChangeEmailAddressPressed ? 'white' : '#2a80b9'}
+                    />
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+
+
             <Pressable
               onPressIn={handleLogoutPressIn}
               onPressOut={handleLogoutRelease}
@@ -308,7 +391,7 @@ navigation.addListener('focus', onFocus);
                 backgroundColor: isFindMeByPressed ? '#2A2C29' : '#13150F',
               }}
               onPress={async () => {
-            
+                navigation.navigate('FindMeBy');
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View
