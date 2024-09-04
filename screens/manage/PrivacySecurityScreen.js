@@ -245,7 +245,7 @@ navigation.addListener('focus', onFocus);
                   : '#13150F',
               }}
               onPress={() => {
-                  navigation.navigate('ChangePassword', {
+                  navigation.navigate('ChangeEmailAddress', {
                     showToast: showToast
                   });
               }}>
