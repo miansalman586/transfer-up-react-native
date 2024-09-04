@@ -23,7 +23,6 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useState, useEffect } from 'react';
 
@@ -89,15 +88,7 @@ export default function ManageTab({ route, navigation }) {
     setIsLogoutPressed(false);
   };
 
-  const [isNotificationsPressed, setIsNotificationsPressed] = useState(false);
 
-  const handleNotificationsPressIn = () => {
-    setIsNotificationsPressed(true);
-  };
-
-  const handleNotificationsPressOut = () => {
-    setIsNotificationsPressed(false);
-  };
 
 
   const [toastVisible, setToastVisible] = useState(false);
@@ -131,30 +122,12 @@ export default function ManageTab({ route, navigation }) {
             visible={toastVisible}
             onClose={closeToast}
           />
-          <View
-            style={{
-              height: '13%',
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginRight: 20,
-              marginLeft: 'auto',
-            }}>
-            <Pressable
-              onPress={() => {
-
-              }}
-              onPressIn={handleNotificationsPressIn}
-              onPressOut={handleNotificationsPressOut}
-              style={{ marginTop: 40 }}>
-              <Ionicons
-                name="notifications-outline"
-                size={32}
-                color={isNotificationsPressed ? 'white' : '#2a80b9'}
-              />
-            </Pressable>
+         <View style={{
+          height: '13%'
+         }}>
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <ScrollView  showsVerticalScrollIndicator={false}>
+            <View style={{  alignItems: 'center' }}>
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {

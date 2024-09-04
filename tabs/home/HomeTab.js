@@ -26,6 +26,7 @@ import ItemLoader from '../../components/ItemLoader';
 import BalanceCard from '../../components/BalanceCard';
 import httpRequest from '../../utils/httpRequest';
 import { updateSetting } from '../../utils/common';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function HomeTab({ navigation }) {
   const [balances, setBalances] = useState(null);
@@ -128,6 +129,16 @@ export default function HomeTab({ navigation }) {
     })
   };
 
+  const [isNotificationPressed, setIsNotificationPressed] = useState(false);
+
+  const handleNotificationPressIn = () => {
+    setIsNotificationPressed(true);
+  };
+
+  const handleNotificationPressOut = () => {
+    setIsNotificationPressed(false);
+  };
+
   useEffect(() => {
     onInit();
 
@@ -142,6 +153,10 @@ export default function HomeTab({ navigation }) {
             height: '100%',
             backgroundColor: '#13150F',
           }}>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }}>
           <View
             style={{
               marginTop: 25,
@@ -154,6 +169,26 @@ export default function HomeTab({ navigation }) {
               foregroundColor={'#999'}>
               <Circle cx="45" cy="55" r="27.5" />
             </ContentLoader>
+          </View>
+          <View
+            style={{
+              marginTop: 25,
+              marginRight: 20,
+            }}>
+            <Pressable
+            onPressIn={handleNotificationPressIn}
+            onPressOut={handleNotificationPressOut}
+              onPress={() => {
+
+              }}
+              style={{ marginTop: 40 }}>
+              <Ionicons
+                name="notifications-outline"
+                size={32}
+                color={isNotificationPressed ? 'white' : '#2a80b9'}
+              />
+            </Pressable>
+          </View>
           </View>
           <StatusBar barStyle="light-content" />
           <ScrollView showsVerticalScrollIndicator={false}>

@@ -10,6 +10,7 @@ import httpRequest from '../../utils/httpRequest';
 import {useEffect} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import AliPayTab from '../../tabs/recipient/AliPayTab';
+import { StatusBar } from 'expo-status-bar';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -39,6 +40,7 @@ if (result.success) {
 
   return (
     <View style={{ paddingTop: 60, backgroundColor: '#13150F' }}>
+
       <View
         style={{
           height: '13%',
@@ -55,6 +57,7 @@ if (result.success) {
           }}>
           <View
             style={{
+          marginTop:20,
               width: 70,
               height: 35,
               borderRadius: '50%',
@@ -72,9 +75,10 @@ if (result.success) {
           </View>
         </Pressable>
       </View>
+
       <Text
         style={{
-          marginTop: 20,
+          marginTop: 40,
           marginLeft: 20,
           marginBottom: 10,
           color: 'white',
