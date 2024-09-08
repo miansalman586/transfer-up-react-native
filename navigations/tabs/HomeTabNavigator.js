@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useState } from 'react';
 
 import HomeTab from '../../tabs/home/HomeTab';
-import RecipientTabNavigator from '../tabs/RecipientTabNavigator';
+import RecipientTab from '../../tabs/home/RecipientTab';
 import ManageTab from '../../tabs/home/ManageTab';
 
 const Tab = createBottomTabNavigator();
@@ -107,7 +107,7 @@ export default function HomeTabNavigator() {
       />
       <Tab.Screen
         name="Recipient"
-        component={RecipientTabNavigator}
+        component={RecipientTab}
         options={{
           headerShown: false,
         }}

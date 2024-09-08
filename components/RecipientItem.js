@@ -68,7 +68,7 @@ export default function RecipientItem({ navigation, recipientData }) {
                 color: 'white',
                 fontSize: 18,
               }}>
-              {recipientData.fullName}
+                   {recipientData.firstName} {recipientData.lastName}
             </Text>
             <Text
               style={{

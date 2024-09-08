@@ -25,7 +25,7 @@ import BottomSheet from '../../components/BottomSheet';
 import ItemLoader from '../../components/ItemLoader';
 import BalanceCard from '../../components/BalanceCard';
 import httpRequest from '../../utils/httpRequest';
-import { updateSetting } from '../../utils/common';
+import { getSetting, updateSetting } from '../../utils/common';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function HomeTab({ navigation }) {
@@ -82,6 +82,9 @@ export default function HomeTab({ navigation }) {
     ).then(async result=>{
 
      let setting = await result.json();
+
+      let existingSetting = await getSetting();
+     setting.isSyncPhoneContact = existingSetting.isSyncPhoneContact;
      await updateSetting(setting);
     });
   };

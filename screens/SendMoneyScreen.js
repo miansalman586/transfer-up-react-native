@@ -59,9 +59,9 @@ export default function SendMoneyScreen({ route, navigation }) {
 
     if (transferType.transferTypeId == 4) {
       setRecipient(null);
-    let result = await httpRequest('customer/get-transfer-pay-recipient?emailAddress=' + emailAddress, 'get', null, true, null);
-    result = await result.json();
-    if (result) {
+    let result = await httpRequest('customer/get-transfer-pay-recipient-by-email-address?emailAddress=' + emailAddress, 'get', null, true, null);
+    if (result.status == 200) {
+     result = await result.json();
       setRecipient(result);
     }  else {
       setRecipient({flag: true});

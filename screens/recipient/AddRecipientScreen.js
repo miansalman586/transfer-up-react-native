@@ -56,8 +56,8 @@ const bottomSheetTransferTypeModalRef = useRef(null);
     setEmailAddressFocused(false);
 
     if (emailAddress) {
-    let result = await httpRequest('customer/has-customer-recipient?transferTypeId=' + transferType?.transferTypeId + '&emailAddress=' + emailAddress, 'get', null, true, setIsLoading);
-    setIsRecipientFound(!result.success);
+    let result = await httpRequest('customer/has-recipient?transferTypeId=' + transferType?.transferTypeId + '&emailAddress=' + emailAddress, 'get', null, true, setIsLoading);
+    setIsRecipientFound(result.status == 200);
     } else {
       setIsRecipientFound(false);
     }

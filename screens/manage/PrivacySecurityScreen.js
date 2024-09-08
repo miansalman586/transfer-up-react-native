@@ -46,24 +46,10 @@ const closeToast = () => {
 
 
 const setSyncPhoneContact = async () => {
-  setIsSyncPhoneContact(!isSyncPhoneContact);
-
-  setIsSyncPhoneContact(!isSyncPhoneContact);
-  let result = await httpRequest(
-    'customer/update-is-sync-phone-contact',
-    'put',
-    {
-      isSyncPhoneContact: !isSyncPhoneContact,
-    },
-    true,
-    setIsLoading
-  );
-if (result.status == 200) {
   let setting =  await getSetting();
   setting.isSyncPhoneContact = !isSyncPhoneContact;
   await updateSetting(setting);
   setIsSyncPhoneContact(!isSyncPhoneContact);
-}
 }
 
   const handlePrivacyPressIn = () => {
@@ -116,7 +102,7 @@ if (result.status == 200) {
 
 
   const onFocus =async () => {
-    let setting=  await getSetting('Setting');
+    let setting=  await getSetting();
     setIsSyncPhoneContact(setting?.isSyncPhoneContact);
   };
 
