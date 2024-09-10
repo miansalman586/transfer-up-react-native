@@ -16,6 +16,7 @@ import PrivacySecurityScreen from '../screens/manage/PrivacySecurityScreen';
 import ChangePasswordScreen from '../screens/manage/ChangePasswordScreen';
 import FindMeByScreen from '../screens/manage/FindMeByScreen';
 import ChangeEmailAddressScreen from '../screens/manage/ChangeEmailAddressScreen';
+import NotificationScreen from '../screens/NotificationScreen';
 
 const Stack = createStackNavigator();
 
@@ -130,6 +131,13 @@ export default function StackNavigator() {
         <Stack.Screen
           name="ChangeEmailAddress"
           component={ChangeEmailAddressScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+            <Stack.Screen
+          name="Notification"
+          component={NotificationScreen}
           options={{
             headerShown: false,
           }}

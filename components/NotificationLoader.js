@@ -10,7 +10,7 @@ export default function NotificationLoader({ count }) {
       <ContentLoader
         key={index}
         height={210}
-        speed={1}
+        speed={0}
         backgroundColor={'#333'}
         foregroundColor={'#999'}
         viewBox={width + ' 210'}>

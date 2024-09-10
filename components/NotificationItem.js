@@ -1,10 +1,8 @@
 import { View, Text, Image, Pressable } from 'react-native';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-import formateDate from '../utils/formatDate';
 
 import { useState } from 'react';
+import formatDate from '../utils/formatDate';
 
 export default function NotificationItem({ notificationData, navigation }) {
   const [isPressed, setIsPressed] = useState(false);
@@ -48,14 +46,14 @@ export default function NotificationItem({ notificationData, navigation }) {
                 color: 'white',
                 fontSize: 18,
               }}>
-              {notificationData.Subject}
+              {notificationData.notificationSubject}
             </Text>
             <Text
               style={{
                 color: 'white',
                 fontSize: 14,
               }}>
-              {formateDate(new Date(notificationData.CreatedDate))}
+                {formatDate(new Date(notificationData.createdDate))}
             </Text>
           </View>
           <Text
@@ -65,7 +63,7 @@ export default function NotificationItem({ notificationData, navigation }) {
               marginTop: 10,
               lineHeight: 25,
             }}>
-            {notificationData.Description}
+            {notificationData.notificationMessage}
           </Text>
         </View>
       </View>

@@ -1,16 +1,16 @@
 import { View, ScrollView, TouchableOpacity, Image, Text } from 'react-native';
 
-import GoBackTopBar from '../../../components/GoBackTopBar';
-import ScreenLoader from '../../../components/ScreenLoader';
+import GoBackTopBar from '../components/GoBackTopBar';
+import ScreenLoader from '../components/ScreenLoader';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-import formateFullDate from '../../../utils/formateFullDate';
+import formateFullDate from '../utils/formateFullDate';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import httpRequest from '../../../utils/httpRequest';
+import httpRequest from '../utils/httpRequest';
 
-import pickImage from '../../../utils/pickImage';
+import pickImage from '../utils/pickImage';
 
 import { useState, useEffect } from 'react';
 

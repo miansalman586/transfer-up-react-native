@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import ScreenLoader from '../../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
+import * as ImagePicker from 'expo-image-picker';
 import PressableButton from '../../components/PressableButton';
 
 import * as Clipboard from 'expo-clipboard';
@@ -31,6 +31,8 @@ import ItemLoader from '../../components/ItemLoader';
 import CustomToast from '../../components/CustomToast';
 
 export default function ManageTab({ route, navigation }) {
+  const [image, setImage] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const onFocus = async () => {
@@ -103,9 +105,28 @@ export default function ManageTab({ route, navigation }) {
     setToastVisible(false);
   };
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImage(result.assets[0].uri); 
+    }
+  };
   
   useEffect(() => {
    navigation.addListener('focus', onFocus);
+
+   (async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+    }
+  })();
 
   }, []);
 
@@ -131,7 +152,7 @@ export default function ManageTab({ route, navigation }) {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
-              
+                  pickImage();
                 }}>
                 <Image
                   style={{
@@ -140,7 +161,7 @@ export default function ManageTab({ route, navigation }) {
                     borderRadius: 40,
                   }}
                   source={{
-                    uri: global.profilePic,
+                    uri: image,
                   }}
                 />
                 <View

@@ -1,25 +1,26 @@
 import { View, ScrollView, Text } from 'react-native';
-import GoBackTopBar from '../../components/GoBackTopBar';
+import GoBackTopBar from '../components/GoBackTopBar';
 
 import { useState, useEffect } from 'react';
 
-import NotificationLoader from '../../components/NotificationLoader';
+import NotificationLoader from '../components/NotificationLoader';
 
-import NotificationItem from '../../components/NotificationItem';
+import NotificationItem from '../components/NotificationItem';
 
-import httpRequest from '../../utils/httpRequest';
+import httpRequest from '../utils/httpRequest';
 
 export default function NotificationScreen({ navigation }) {
   const [notifications, setNorifications] = useState(null);
 
-  const onFocus = () => {
+  const onFocus = async () => {
     setNorifications(null);
-    httpRequest('get-notification', 'get', null, null, true, navigation).then(
-      (data) => {
-        if (data.Data) setNorifications(data.Data);
-        else setNorifications([]);
-      }
-    );
+   let data = await httpRequest('customer/get-notification', 'get', null, true, null);
+   if (data.status == 200)
+    { 
+      data = await data.json();
+      setNorifications(data);
+    }
+  else setNorifications([]);
   };
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function NotificationScreen({ navigation }) {
         Inbox
       </Text>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ marginLeft: 20, marginTop: 20 }}>
+        <View style={{ marginLeft: 20, marginTop: 10 }}>
           <Text style={{ color: 'white' }}>Notifications</Text>
         </View>
         <View

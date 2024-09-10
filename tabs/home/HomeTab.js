@@ -182,7 +182,7 @@ export default function HomeTab({ navigation }) {
             onPressIn={handleNotificationPressIn}
             onPressOut={handleNotificationPressOut}
               onPress={() => {
-
+                navigation.navigate('Notification');
               }}
               style={{ marginTop: 40 }}>
               <Ionicons
