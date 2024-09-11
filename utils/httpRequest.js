@@ -24,7 +24,7 @@ export default async function httpRequest(
       requestBody = JSON.stringify(body);
     }
 
-    const response = await fetch('http://10.101.40.59/api/' + url, {
+    const response = await fetch('http://10.101.146.252/api/' + url, {
       method: method,
       headers: {
         Authorization: 'Bearer ' + jwt,

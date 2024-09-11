@@ -32,7 +32,6 @@ const bottomSheetTransferTypeModalRef = useRef(null);
   const [isEmailAddressFocused, setEmailAddressFocused] = useState(false);
   const [emailAddress, setEmailAddress] = useState(null);
   
-  const [isFirstNameFocused, setFirstNameFocused] = useState(false);
   const [firstName, setFirstName] = useState(null);
 
   const [isLastNameFocused, setLastNameFocused] = useState(false);
@@ -63,6 +62,7 @@ const bottomSheetTransferTypeModalRef = useRef(null);
     }
 };
 
+const [isFirstNameFocused, setFirstNameFocused] = useState(false);
 
 const handleFirstNameFocus = () => {
     setFirstNameFocused(true);

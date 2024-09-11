@@ -17,6 +17,7 @@ import ChangePasswordScreen from '../screens/manage/ChangePasswordScreen';
 import FindMeByScreen from '../screens/manage/FindMeByScreen';
 import ChangeEmailAddressScreen from '../screens/manage/ChangeEmailAddressScreen';
 import NotificationScreen from '../screens/NotificationScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -142,6 +143,15 @@ export default function StackNavigator() {
             headerShown: false,
           }}
         />
+
+<Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
       
       </Stack.Navigator>
     </NavigationContainer>

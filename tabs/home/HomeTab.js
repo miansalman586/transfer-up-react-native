@@ -48,6 +48,8 @@ export default function HomeTab({ navigation }) {
     setIsSeeAllPressed(false);
   };
 
+  
+
   const getAvailableCurrencies = () => {
     return global.currencies?.filter(
       (e) => !balances?.some((t) => t.currencyId == e.currencyId)
@@ -164,6 +166,12 @@ export default function HomeTab({ navigation }) {
             style={{
               marginTop: 25,
             }}>
+                 <TouchableOpacity
+                           activeOpacity={0.5}
+                 
+              onPress={() => {
+                navigation.navigate('Profile');
+              }}>
             <ContentLoader
               height={95}
               width={95}
@@ -172,6 +180,7 @@ export default function HomeTab({ navigation }) {
               foregroundColor={'#999'}>
               <Circle cx="45" cy="55" r="27.5" />
             </ContentLoader>
+            </TouchableOpacity>
           </View>
           <View
             style={{
