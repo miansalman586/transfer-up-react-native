@@ -69,8 +69,8 @@ export default function SendMoneyScreen({ route, navigation }) {
   } else {
     setRecipient(null);
     let result = await httpRequest('customer/get-recipient-by-email-address?emailAddress=' + emailAddress + '&currencyId=' + newBalanceData?.currencyId + '&transferTypeId=' + transferType?.transferTypeId, 'get', null, true, null);
-    if (result.data) {
-      setRecipient(result.data);
+    if (result.status == 200) {
+      setRecipient(result);
     }  else {
       setRecipient({flag: true});
     }
@@ -106,8 +106,9 @@ export default function SendMoneyScreen({ route, navigation }) {
     setEmailAddress(route.params.emailAddress);
 
    let result = await httpRequest('public/get-transaction-fee', 'get', null, false, null);
-   if (result.success) {
-    setTransactionFee(result.data.find(e=>e.transactionFeeId == 2).fee)
+   if (result.status == 200) {
+    result = await result.json();
+    setTransactionFee(result.find(e=>e.transactionFeeId == 2).fee)
    }
   };
 
@@ -325,6 +326,9 @@ navigation.addListener('focus', onFocus);
               </View>
             }
 
+{transferType?.transferTypeId == 2 &&
+<View>
+
 <Text style={{ color: 'white', marginTop:20 }}>Email Address</Text>
                 <TextInput
                   style={{
@@ -355,6 +359,8 @@ navigation.addListener('focus', onFocus);
                   onBlur={handleEmailAddressBlur}
                   selectionColor="#2a80b9"
                 />
+                </View>
+              }
               
               {!recipient && (
              <View style={{ marginLeft: -20 , marginTop:10, flex: 'row' }}>
@@ -386,7 +392,7 @@ navigation.addListener('focus', onFocus);
                     emailAddress: emailAddress
                   }, true, setIsLoading);
 
-                  if (result.success) {
+                  if (result.status == 200) {
                     navigation.navigate('Home');
                   } else {
                     Alert.alert('Error', result.message);
@@ -400,7 +406,7 @@ navigation.addListener('focus', onFocus);
                     payPalEmailAddress: emailAddress
                   }, true, setIsLoading);
 
-                  if (result.success) {
+                  if (result.status == 200) {
                     navigation.navigate('Home');
                   } else {
                     Alert.alert('Error', result.message);
@@ -408,7 +414,9 @@ navigation.addListener('focus', onFocus);
               }
               }}
               disabled={
-                isNoAmountError || !amount || !emailAddress || (transferType.transferTypeId == 4 && recipient?.flag)
+                isNoAmountError || !amount || 
+                (!emailAddress && transferType?.transferTypeId == 2) || 
+                (transferType.transferTypeId == 4 && recipient?.flag)
               }
               style={{
                 marginTop: 'auto',
@@ -419,7 +427,8 @@ navigation.addListener('focus', onFocus);
                 alignItems: 'center',
                 backgroundColor:
                 isNoAmountError  || !amount ||
-                !emailAddress || (transferType.transferTypeId == 4 && recipient?.flag)
+                (!emailAddress && transferType?.transferTypeId == 2) || 
+                (transferType.transferTypeId == 4 && recipient?.flag)
                   ? '#2A2C29'
                   : isSendPressed
                   ? 'white'

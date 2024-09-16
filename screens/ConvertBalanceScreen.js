@@ -74,9 +74,10 @@ export default function ConvertBalanceScreen({ route, navigation }) {
     if (fromAmount > 0) {
       setExchangeRate(null);
     let result = await httpRequest('public/get-currency-exchange-rate?sourceCurrency=' + newBalanceData.currency + '&targetCurrency=' + newToBalanceData.currency + '&amount=' + fromAmount, 'get', null, false, null);
-    if (result.success) {
-      setToAmount(parseFloat(result.data.amount).toFixed(2));
-      setExchangeRate(parseFloat(result.data.rate).toFixed(2));
+    if (result.status == 200) {
+      result = await result.json();
+      setToAmount((parseFloat(fromAmount) * parseFloat(result[0].rate)).toFixed(2));
+      setExchangeRate(parseFloat(result[0].rate).toFixed(2));
     }
   }
   };
@@ -386,7 +387,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                   true,
                   setIsLoading
                 );
-                if (result.success) {
+                if (result.status == 200) {
                   navigation.navigate('HomeTab');
                 } else {
                   Alert.alert('Error', result.Message);

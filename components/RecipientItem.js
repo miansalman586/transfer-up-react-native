@@ -82,7 +82,7 @@ export default function RecipientItem({ navigation, recipientData }) {
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ color: 'white', fontSize: 14, marginTop: 10 }}>
-            <Text>{recipientData.transferType} - {recipientData.emailAddress}</Text>
+            <Text>{recipientData.transferType} - {recipientData.emailAddress ?? recipientData.accountNumber}</Text>
             </Text>
           </View>
         </View>

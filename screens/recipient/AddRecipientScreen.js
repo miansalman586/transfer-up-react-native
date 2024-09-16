@@ -34,8 +34,14 @@ const bottomSheetTransferTypeModalRef = useRef(null);
   
   const [firstName, setFirstName] = useState(null);
 
+  const [accountNumber, setAccountNumber] = useState(null);
+
+
   const [isLastNameFocused, setLastNameFocused] = useState(false);
+  const [isBICFocused, setBICFocused] = useState(false);
+
   const [lastName, setLastName] = useState(null);
+  const [bic, setBIC] = useState(null);
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
 
@@ -64,12 +70,30 @@ const bottomSheetTransferTypeModalRef = useRef(null);
 
 const [isFirstNameFocused, setFirstNameFocused] = useState(false);
 
+const [isAccountNumberFocused, setAccountNumberFocused] = useState(false);
+
 const handleFirstNameFocus = () => {
     setFirstNameFocused(true);
   };
 
   const handleFirstNameBlur = async () => {
     setFirstNameFocused(false);
+};
+
+const handleBICFocus = () => {
+  setBICFocused(true);
+};
+
+const handleBICBlur = async () => {
+  setBICFocused(false);
+};
+
+const handleAccountNumberFocus = () => {
+  setAccountNumberFocused(true);
+};
+
+const handleAccountNumberBlur = async () => {
+  setAccountNumberFocused(false);
 };
 
 const handleLastNameFocus = () => {
@@ -204,7 +228,7 @@ const handleLastNameFocus = () => {
              
                 </TouchableOpacity>
 
-{transferType &&
+{transferType?.transferTypeId == 2 &&
 <View>
 
 
@@ -289,6 +313,127 @@ const handleLastNameFocus = () => {
 
 
 
+
+                {currency?.currencyId == 3 && transferType?.transferTypeId == 8 &&
+<View>
+
+
+
+                  
+<Text style={{ color: 'white',marginTop:20 }}>IBAN</Text>
+                <TextInput
+                  style={{
+                    inputMode: 'email',
+                    keyboardType: 'email-address',
+                    textContentType: 'emailAddress',
+                    autoComplete: 'email',
+                    color: 'white',
+                    fontSize: 18,
+                    height: 50,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    backgroundColor: '#2A2C29',
+                    borderColor:
+                    (isRecupientFound) 
+                    ? '#FFBDBB'
+                    :
+                       isEmailAddressFocused
+                        ? '#2a80b9'
+                        : '#2A2C29',
+                    borderWidth: 2,
+                    marginTop: 10,
+                  }}
+                  onChangeText={(value) => {
+                
+
+                    setEmailAddress(value);
+                  }}
+                  value={emailAddress}
+                  onFocus={handleEmailAddressFocus}
+                  onBlur={handleEmailAddressBlur}
+                  selectionColor="#2a80b9"
+                />
+                      <ErrorMessage
+              flag={isRecupientFound}
+              message={"Recipient already exists."
+              }
+            />
+            </View>
+}
+
+
+{currency?.currencyId == 2 && transferType?.transferTypeId == 8 &&
+<View>
+
+           
+<Text style={{ color: 'white',marginTop:20 }}>BIC/SWIFT</Text>
+                <TextInput
+                  style={{
+                    inputMode: 'email',
+                    keyboardType: 'email-address',
+                    textContentType: 'emailAddress',
+                    autoComplete: 'email',
+                    color: 'white',
+                    fontSize: 18,
+                    height: 50,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    backgroundColor: '#2A2C29',
+                    borderColor:
+                   
+                       isBICFocused
+                        ? '#2a80b9'
+                        : '#2A2C29',
+                    borderWidth: 2,
+                    marginTop: 10,
+                  }}
+                  onChangeText={(value) => {
+                
+
+                    setBIC(value);
+                  }}
+                  value={bic}
+                  onFocus={handleBICFocus}
+                  onBlur={handleBICBlur}
+                  selectionColor="#2a80b9"
+                />
+          
+
+                  
+<Text style={{ color: 'white',marginTop:20 }}>Account Number</Text>
+                <TextInput
+                  style={{
+                    inputMode: 'email',
+                    keyboardType: 'email-address',
+                    textContentType: 'emailAddress',
+                    autoComplete: 'email',
+                    color: 'white',
+                    fontSize: 18,
+                    height: 50,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    backgroundColor: '#2A2C29',
+                    borderColor:
+                 
+                       isAccountNumberFocused
+                        ? '#2a80b9'
+                        : '#2A2C29',
+                    borderWidth: 2,
+                    marginTop: 10,
+                  }}
+                  onChangeText={(value) => {
+                
+
+                    setAccountNumber(value);
+                  }}
+                  value={accountNumber}
+                  onFocus={handleAccountNumberFocus}
+                  onBlur={handleAccountNumberBlur}
+                  selectionColor="#2a80b9"
+                />
+           
+            </View>
+}
             
 
             </ScrollView>
@@ -308,13 +453,27 @@ const handleLastNameFocus = () => {
                         lastName: lastName,
                         emailAddress: emailAddress,
                         currencyId: currency?.currencyId,
-                        transferTypeId: transferType?.transferTypeId
+                        transferTypeId: transferType?.transferTypeId,
+                        wiseRecipient: {
+                          details: {
+                            accountNumber: accountNumber,
+                            bic: bic
+                          }
+                        }
                     }, true, setIsLoading);
-                    if (result.success) {
+                    alert(result.status)
+                    if (result.status == 200) {
                         navigation.goBack();
                     } 
               }}
-              disabled={!emailAddress || !firstName || !lastName || !currency || !transferType || isRecupientFound}
+              disabled={(!emailAddress && transferType?.transferTypeId == 2) || 
+                (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                !firstName || 
+                !lastName || 
+                !currency || 
+                !transferType || 
+                isRecupientFound}
               style={{
                 marginTop: 'auto',
                 marginBottom: 40,
@@ -323,7 +482,14 @@ const handleLastNameFocus = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor:
-                !emailAddress || !firstName || !lastName || !currency || !transferType || isRecupientFound
+                (!emailAddress && transferType?.transferTypeId == 2)|| 
+                (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                !firstName || 
+                !lastName || 
+                !currency || 
+                !transferType || 
+                isRecupientFound
                     ? '#2A2C29'
                     : isContinuePressed
                     ? 'white'
