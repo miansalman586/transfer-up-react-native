@@ -18,7 +18,6 @@ import TransferTypeItem from '../../components/TransferTypeItem';
 export default function AddRecipientScreen({ route, navigation })  {
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecupientFound, setIsRecipientFound] = useState(false);
 
 const [currency, setCurrency] = useState(null);
 const [transferType, setTransferType] = useState(null);
@@ -42,6 +41,8 @@ const bottomSheetTransferTypeModalRef = useRef(null);
 
   const [lastName, setLastName] = useState(null);
   const [bic, setBIC] = useState(null);
+  const [iban, setIBAN] = useState(null);
+
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
 
@@ -59,16 +60,10 @@ const bottomSheetTransferTypeModalRef = useRef(null);
 
   const handleEmailAddressBlur = async () => {
     setEmailAddressFocused(false);
-
-    if (emailAddress) {
-    let result = await httpRequest('customer/has-recipient?transferTypeId=' + transferType?.transferTypeId + '&emailAddress=' + emailAddress, 'get', null, true, setIsLoading);
-    setIsRecipientFound(result.status == 200);
-    } else {
-      setIsRecipientFound(false);
-    }
 };
 
 const [isFirstNameFocused, setFirstNameFocused] = useState(false);
+const [isIBANFocused, setIBANFocused] = useState(false);
 
 const [isAccountNumberFocused, setAccountNumberFocused] = useState(false);
 
@@ -102,6 +97,15 @@ const handleLastNameFocus = () => {
 
   const handleLastNameBlur = async () => {
     setLastNameFocused(false);
+};
+
+
+const handleIBANFocus = () => {
+  setIBANFocused(true);
+};
+
+const handleIBANBlur = async () => {
+  setIBANFocused(false);
 };
 
   const onFocus = async () =>{
@@ -248,9 +252,7 @@ const handleLastNameFocus = () => {
                     paddingRight: 20,
                     backgroundColor: '#2A2C29',
                     borderColor:
-                    (isRecupientFound) 
-                    ? '#FFBDBB'
-                    :
+                  
                        isEmailAddressFocused
                         ? '#2a80b9'
                         : '#2A2C29',
@@ -267,11 +269,7 @@ const handleLastNameFocus = () => {
                   onBlur={handleEmailAddressBlur}
                   selectionColor="#2a80b9"
                 />
-                      <ErrorMessage
-              flag={isRecupientFound}
-              message={"Recipient already exists."
-              }
-            />
+           
             </View>
 }
 <Text style={{ color: 'white' , marginTop: 20}}>Currency</Text>
@@ -334,10 +332,7 @@ const handleLastNameFocus = () => {
                     paddingRight: 20,
                     backgroundColor: '#2A2C29',
                     borderColor:
-                    (isRecupientFound) 
-                    ? '#FFBDBB'
-                    :
-                       isEmailAddressFocused
+                       isIBANFocused
                         ? '#2a80b9'
                         : '#2A2C29',
                     borderWidth: 2,
@@ -346,18 +341,13 @@ const handleLastNameFocus = () => {
                   onChangeText={(value) => {
                 
 
-                    setEmailAddress(value);
+                    setIBAN(value);
                   }}
-                  value={emailAddress}
-                  onFocus={handleEmailAddressFocus}
-                  onBlur={handleEmailAddressBlur}
+                  value={iban}
+                  onFocus={handleIBANFocus}
+                  onBlur={handleIBANBlur}
                   selectionColor="#2a80b9"
                 />
-                      <ErrorMessage
-              flag={isRecupientFound}
-              message={"Recipient already exists."
-              }
-            />
             </View>
 }
 
@@ -457,11 +447,11 @@ const handleLastNameFocus = () => {
                         wiseRecipient: {
                           details: {
                             accountNumber: accountNumber,
-                            bic: bic
+                            bic: bic,
+                            iban: iban
                           }
                         }
                     }, true, setIsLoading);
-                    alert(result.status)
                     if (result.status == 200) {
                         navigation.goBack();
                     } 
@@ -469,11 +459,11 @@ const handleLastNameFocus = () => {
               disabled={(!emailAddress && transferType?.transferTypeId == 2) || 
                 (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
                 (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                (!iban && transferType?.transferTypeId == 8 && currency?.currencyId == 3) ||
                 !firstName || 
                 !lastName || 
                 !currency || 
-                !transferType || 
-                isRecupientFound}
+                !transferType}
               style={{
                 marginTop: 'auto',
                 marginBottom: 40,
@@ -485,11 +475,11 @@ const handleLastNameFocus = () => {
                 (!emailAddress && transferType?.transferTypeId == 2)|| 
                 (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
                 (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
+                (!iban && transferType?.transferTypeId == 8 && currency?.currencyId == 3) ||
                 !firstName || 
                 !lastName || 
                 !currency || 
-                !transferType || 
-                isRecupientFound
+                !transferType
                     ? '#2A2C29'
                     : isContinuePressed
                     ? 'white'
@@ -588,7 +578,6 @@ const handleLastNameFocus = () => {
 
                           setTransferType(transferTypeData);
                           setEmailAddress(null);
-                          setIsRecipientFound(false);
                         }}
                       />
                     ))}

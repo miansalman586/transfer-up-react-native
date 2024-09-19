@@ -21,7 +21,9 @@ export default function RecipientItem({ navigation, recipientData }) {
       onPress={() => {
         navigation.navigate('RecipientDetail', {
           recipientId: recipientData.customerRecipientId,
-        })
+          transferTypeId: recipientData.transferTypeId,
+          tpEmailAddress: recipientData.emailAddress
+        });
       }}
       style={{
         paddingLeft: 20,
@@ -82,7 +84,7 @@ export default function RecipientItem({ navigation, recipientData }) {
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ color: 'white', fontSize: 14, marginTop: 10 }}>
-            <Text>{recipientData.transferType} - {recipientData.emailAddress ?? recipientData.accountNumber}</Text>
+            <Text>{recipientData.transferType} - {recipientData.emailAddress ? recipientData.emailAddress : recipientData.accountNumber ? recipientData.accountNumber : recipientData.iban}</Text>
             </Text>
           </View>
         </View>

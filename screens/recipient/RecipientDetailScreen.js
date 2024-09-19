@@ -8,7 +8,7 @@ import httpRequest from '../../utils/httpRequest';
 import ScreenLoader from '../../components/ScreenLoader';
 
 export default function RecipientDetailScreen({ route, navigation })  {
-const { recipientId } = route.params;
+const { recipientId, transferTypeId , tpEmailAddress} = route.params;
 
 const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +35,7 @@ const handleSendMoneyPressIn = () => {
       transferTypeId: recipientDetail?.transferTypeId,
       emailAddress: recipientDetail?.emailAddress
     }, true, setIsLoading);
-    if (!result.success) {
+    if (!result.status == 200) {
     Alert.alert('Error', result.Message);
   }  else {
     setIsAutoWithdrawalRecipient(!isAutoWithdrawalRecipient);
@@ -45,7 +45,7 @@ const handleSendMoneyPressIn = () => {
     currencyId: recipientDetail?.currencyId,
   }, true, setIsLoading);
 
-  if (!result.success) {
+  if (!result.status == 200) {
   Alert.alert('Error', result.Message);
 }  else {
   setIsAutoWithdrawalRecipient(!isAutoWithdrawalRecipient);
@@ -66,11 +66,20 @@ const handleSendMoneyPressIn = () => {
   };
 
 const onFocus = async () =>{
+  if (transferTypeId == 4) {
+    let result = await httpRequest('customer/get-transfer-pay-recipient-detail?emailAddress=' + tpEmailAddress, 'get', null, true, setIsLoading);
+    if (result.status == 200) {
+      result = await result.json();
+        setRecipientDetail(result);
+    }
+  } else {
 let result = await httpRequest('customer/get-recipient-detail?recipientId=' + recipientId, 'get', null, true, setIsLoading);
-if (result.success) {
-    setRecipientDetail(result.data);
-    setIsAutoWithdrawalRecipient(result?.data?.isAutoWithdrawal);
+if (result.status == 200) {
+  result = await result.json();
+    setRecipientDetail(result);
+    setIsAutoWithdrawalRecipient(result?.isAutoWithdrawal);
 }
+  }
 
 
 };
@@ -144,7 +153,7 @@ useEffect(() => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     backgroundColor:
-                      !global.balances.some((e) => e.currencyId == recipientDetail?.currencyId && e.totalBalance > 0.0)
+                      !global.balances.some((e) => e.currencyId == recipientDetail?.currencyId && e.totalBalance > 0.0) && recipientDetail?.transferTypeId != 4
                         ? '#2A2C29'
                         : isSendMoneyPressed ? 'white' 
                         : '#2a80b9',
@@ -160,26 +169,69 @@ useEffect(() => {
               </Pressable>
               </View>
            
-              <View style={{ marginTop: 40 }}>
+              <View style={{ marginTop: 20 }}>
                 <Text style={{ color: 'white', fontSize: 18 }}>
                   Full Name
                 </Text>
               </View>
               <View style={{ marginTop: 5 }}>
-                <Text style={{ color: 'white' }}>{recipientDetail?.name}</Text>
+                <Text style={{ color: 'white' }}>{recipientDetail?.firstName + ' ' + recipientDetail?.lastName}</Text>
               </View>
-              <View style={{ marginTop: 40 }}>
-                <Text style={{ color: 'white', fontSize: 18 }}>Email Address</Text>
-              </View>
-              <View style={{ marginTop: 5 }}>
-                <Text style={{ color: 'white' }}>{recipientDetail?.emailAddress}</Text>
-              </View>
-              <View style={{ marginTop: 40 }}>
+              {recipientDetail?.transferTypeId != 4 &&
+  <View>
+      <View style={{ marginTop: 40 }}>
                 <Text style={{ color: 'white', fontSize: 18 }}>Currency</Text>
               </View>
               <View style={{ marginTop: 5 }}>
                 <Text style={{ color: 'white' }}>{recipientDetail?.description}</Text>
               </View>
+  </View>
+              }
+            
+              {recipientDetail?.emailAddress &&
+<View>
+<View style={{ marginTop: 40 }}>
+                <Text style={{ color: 'white', fontSize: 18 }}>Email Address</Text>
+              </View>
+              <View style={{ marginTop: 5 }}>
+                <Text style={{ color: 'white' }}>{recipientDetail?.emailAddress}</Text>
+              </View>
+</View>
+              }
+                   {recipientDetail?.bicswift &&
+<View>
+<View style={{ marginTop: 40 }}>
+                <Text style={{ color: 'white', fontSize: 18 }}>BIC/SWIFT</Text>
+              </View>
+              <View style={{ marginTop: 5 }}>
+                <Text style={{ color: 'white' }}>{recipientDetail?.bicswift}</Text>
+              </View>
+</View>
+              }
+                   {recipientDetail?.accountNumber &&
+<View>
+<View style={{ marginTop: 40 }}>
+                <Text style={{ color: 'white', fontSize: 18 }}>Account Number</Text>
+              </View>
+              <View style={{ marginTop: 5 }}>
+                <Text style={{ color: 'white' }}>{recipientDetail?.accountNumber}</Text>
+              </View>
+</View>
+              }
+
+{recipientDetail?.iban &&
+<View>
+<View style={{ marginTop: 40 }}>
+                <Text style={{ color: 'white', fontSize: 18 }}>IBAN</Text>
+              </View>
+              <View style={{ marginTop: 5 }}>
+                <Text style={{ color: 'white' }}>{recipientDetail?.iban}</Text>
+              </View>
+</View>
+              }
+            
+{recipientDetail?.transferTypeId != 4 &&
+
 
 
               <View
@@ -205,8 +257,11 @@ useEffect(() => {
                   value={isAutoWithdrawalRecipient}
                 />
               </View>
-
+            }
             </ScrollView>
+            {recipientDetail?.transferTypeId != 4 &&
+
+        
             <View
                 style={{
                   paddingLeft: 20,
@@ -263,6 +318,7 @@ useEffect(() => {
                   </Text>
                 </Pressable>
               </View>
+                  }
           </View>
         )}
         {isLoading && <ScreenLoader />}
