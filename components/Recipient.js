@@ -54,7 +54,7 @@ export default function Recipient({ recipient }) {
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ color: 'white', fontSize: 14, marginTop: 10 }}>
-              {recipient.emailAddress}
+            {recipient.emailAddress ? recipient.emailAddress : recipient.accountNumber ? recipient.accountNumber : recipient.iban}
             </Text>
           </View>
         </View>

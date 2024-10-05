@@ -58,23 +58,27 @@ export default function HomeTab({ navigation }) {
 
   const onFocus = async () => {
     setBalances(null);
-    let balances = await httpRequest('customer/get-balance', 'get', null, true);
-    balances = await balances.json();
-    if (balances) {
-      setBalances(balances);
-      global.balances = balances;
-    } else setBalances([]);
+    httpRequest('customer/get-balance', 'get', null, true).then(async balances=>{
+      balances = await balances.json();
+      if (balances) {
+        setBalances(balances);
+        global.balances = balances;
+      } else setBalances([]);
+    });
+ 
 
     setTransactions(null);
-    let transactions = await httpRequest(
+     httpRequest(
       'customer/get-transaction?pageNumber=1&pageSize=3',
       'get',
       null,
       true
-    );
-    transactions = await transactions.json();
-    if (transactions) setTransactions(transactions);
-    else setTransactions([]);
+    ).then(async transactions=>{
+      transactions = await transactions.json();
+      if (transactions) setTransactions(transactions);
+      else setTransactions([]);
+    });
+  
 
     httpRequest(
       'customer/get-setting',

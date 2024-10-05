@@ -33,7 +33,9 @@ const handleSendMoneyPressIn = () => {
     let result = await httpRequest('customer/update-auto-withdrawal-recipient', 'put',{
       currencyId: recipientDetail?.currencyId,
       transferTypeId: recipientDetail?.transferTypeId,
-      emailAddress: recipientDetail?.emailAddress
+      emailAddress: recipientDetail?.emailAddress,
+      bicswift: recipientDetail?.bicswift,
+      accountNumber: recipientDetail?.accountNumber
     }, true, setIsLoading);
     if (!result.status == 200) {
     Alert.alert('Error', result.Message);
@@ -44,7 +46,6 @@ const handleSendMoneyPressIn = () => {
   let result = await httpRequest('customer/update-auto-withdrawal-recipient', 'put', {
     currencyId: recipientDetail?.currencyId,
   }, true, setIsLoading);
-
   if (!result.status == 200) {
   Alert.alert('Error', result.Message);
 }  else {
@@ -134,6 +135,8 @@ useEffect(() => {
                   {recipientDetail?.transferType}
                 </Text>
                 <Pressable
+                disabled={  !global.balances.some((e) => e.currencyId == recipientDetail?.currencyId && e.totalBalance > 0.0) && recipientDetail?.transferTypeId != 4
+                }
                    onPressIn={handleSendMoneyPressIn}
                    onPressOut={handleSendMoneyPressOut}
                 style={{ marginBottom: 20 }}
@@ -142,7 +145,8 @@ useEffect(() => {
                   navigation.navigate('SendMoney', {
                             transferType: global.transferTypes.find(e=>e.transferTypeId == recipientDetail?.transferTypeId),
                             balanceData: global.balances.find(e=>e.currencyId == recipientDetail?.currencyId),
-                            emailAddress: recipientDetail?.emailAddress
+                            emailAddress: recipientDetail?.emailAddress,
+                            recipient: recipientDetail
                           });
                 }}>
                      <View
@@ -283,7 +287,7 @@ useEffect(() => {
                           onPress: async () => {
                            let result = await httpRequest('customer/delete-recipient?recipientId=' + recipientDetail?.customerRecipientId, 'delete', null, true, setIsLoading);
 
-                           if (result.success) {
+                           if (result.status == 200) {
                             navigation.goBack();
                            } else {
                             Alert.alert('Error', result.Message);

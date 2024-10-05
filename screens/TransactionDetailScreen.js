@@ -460,7 +460,9 @@ export default function TransactionDetailScreen({ route, navigation }) {
                     </View>
                   </View>
                 )}
-                {transactionData?.transferTypeId == 2 && (
+
+
+                {transactionData?.transactionTypeId == 1 && (
                   <View>
                     <View
                       style={{
@@ -517,21 +519,24 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         </Text>
                       </View>
                     )}
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text
-                        style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
-                        PayPal Fee
-                      </Text>
-                      <Text
-                        style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
-                        {transactionData?.payPalTransactionFee}{' '}
-                        {transactionData?.currency}
-                      </Text>
-                    </View>
+                    {transactionData?.payPalTransactionFee > 0 && (
+     <View
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'space-between',
+     }}>
+     <Text
+       style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
+       PayPal Fee
+     </Text>
+     <Text
+       style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
+       {transactionData?.payPalTransactionFee}{' '}
+       {transactionData?.currency}
+     </Text>
+   </View>
+                   )}
+               
                     {transactionData?.transactionTypeId == 1 && transactionData?.transactionStatusId == 3 && (
                       <View
                         style={{
@@ -559,6 +564,83 @@ export default function TransactionDetailScreen({ route, navigation }) {
                     )}
                   </View>
                 )}
+
+{transactionData?.transferTypeId == 9
+                  && (
+                    <View>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          marginBottom: 15,
+                          borderWidth: 1,
+                          borderColor: '#2A2C29',
+                        }}></View>
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontSize: 22,
+                          fontWeight: 'bold',
+                        }}>
+                        Bank Details
+                      </Text>
+                   
+                    
+                        { transactionData?.bicswift  &&
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             BIC/SWIFT
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              {transactionData.bicswift}
+                            </Text>
+                          </View>
+}
+              
+{ transactionData?.accountNumber  &&
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             Account Number
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              {transactionData.accountNumber}
+                            </Text>
+                          </View>
+}
+
+
+                   
+                    </View>
+                  )}
+
+
                 {transactionData?.transferTypeId == 2 
                   && (
                     <View>
@@ -824,12 +906,12 @@ showToast('Copied!');
                           text: 'Cancel',
                           style: 'destructive',
                           onPress: async () => {
-                           let result = await httpRequest('customer/update-customer-transaction-status', 'post', {
+                           let result = await httpRequest('customer/update-transaction-status', 'put', {
                             transactionId: transactionId,
                             transactionStatusId: 4
                            }, true, setIsLoading);
 
-                           if (result.success) {
+                           if (result.status == 200) {
                             navigation.goBack();
                            } else {
                             Alert.alert('Error', result.Message);

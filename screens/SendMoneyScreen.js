@@ -26,6 +26,7 @@ import BottomSheet from '../components/BottomSheet';
 import InputSearch from '../components/InputSearch';
 
 import CurrencyItem from '../components/CurrencyItem';
+import RecipientItem from '../components/RecipientItem';
 
 import ItemLoader from '../components/ItemLoader';
 
@@ -38,7 +39,11 @@ export default function SendMoneyScreen({ route, navigation }) {
   const { transferType, balanceData } = route.params;
 
   const bottomSheetBalanceDataModalRef = useRef(null);
+  const bottomSheetRecipientModalRef = useRef(null);
+
   const [balanceDataSearchText, setBalanceDataSearchText] = useState(null);
+  const [recipientSearchText, setRecipientSearchText] = useState(null);
+
 
   const [isNoAmountError, setIsNoAmountError] = useState(false);
   const [isAmountFocused, setIsAmountFocused] = useState(false);
@@ -49,6 +54,8 @@ export default function SendMoneyScreen({ route, navigation }) {
   const [emailAddress, setEmailAddress] = useState(null);
 
   const [recipient, setRecipient] = useState({});
+  const [recipients, setRecipients] = useState([]);
+
 
   const handleEmailAddressFocus = () => {
     setEmailAddressFocused(true);
@@ -60,6 +67,8 @@ export default function SendMoneyScreen({ route, navigation }) {
     if (transferType.transferTypeId == 4) {
       setRecipient(null);
     let result = await httpRequest('customer/get-transfer-pay-recipient-by-email-address?emailAddress=' + emailAddress, 'get', null, true, null);
+   
+    
     if (result.status == 200) {
      result = await result.json();
       setRecipient(result);
@@ -70,6 +79,7 @@ export default function SendMoneyScreen({ route, navigation }) {
     setRecipient(null);
     let result = await httpRequest('customer/get-recipient-by-email-address?emailAddress=' + emailAddress + '&currencyId=' + newBalanceData?.currencyId + '&transferTypeId=' + transferType?.transferTypeId, 'get', null, true, null);
     if (result.status == 200) {
+      result = await result.json();
       setRecipient(result);
     }  else {
       setRecipient({flag: true});
@@ -105,11 +115,25 @@ export default function SendMoneyScreen({ route, navigation }) {
     setNewBalanceData(balanceData);
     setEmailAddress(route.params.emailAddress);
 
+    if (!route.params.recipient) {
+      setRecipient({flag: true});
+    } else {
+      setRecipient(route.params.recipient);
+    }
+
    let result = await httpRequest('public/get-transaction-fee', 'get', null, false, null);
    if (result.status == 200) {
     result = await result.json();
     setTransactionFee(result.find(e=>e.transactionFeeId == 2).fee)
    }
+
+   if (transferType.transferTypeId == 9) {
+   let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + transferType.transferTypeId, 'get', null, true, null);
+   if (recip.status == 200) {
+    recip = await recip.json();
+    setRecipients(recip)
+   }
+  }
   };
 
   useEffect(() => {
@@ -326,7 +350,48 @@ navigation.addListener('focus', onFocus);
               </View>
             }
 
-{transferType?.transferTypeId == 2 &&
+            {transferType?.transferTypeId == 9 &&
+            <View>
+                  <Text style={{ color: 'white' , marginTop: 20}}>Recipient</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                      bottomSheetRecipientModalRef.current.present();
+                }}>
+                <View
+                style={{
+                  height: 52,
+                  paddingLeft: 5,
+                  color: 'white',
+                  paddingRight: 20,
+                  backgroundColor: '#2A2C29',
+                  marginTop: 10,
+                  fontSize: 18,
+                  flexDirection: 'row'
+                  , justifyContent: 'space-between'
+                }}>
+                  <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginLeft: 20,
+                        marginTop: 15
+                  }}>
+      {recipient && recipient?.firstName && recipient?.lastName ? recipient?.firstName + ' ' + recipient?.lastName : ''}
+
+                  </Text>
+   <FontAwesome5
+                      style={{ marginTop: 15, marginLeft: 10 }}
+                      name="chevron-down"
+                      size={18}
+                      color="white"
+                    />
+
+                </View>
+             
+                </TouchableOpacity>
+            </View>
+
+            }
+
+{(transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4) &&
 <View>
 
 <Text style={{ color: 'white', marginTop:20 }}>Email Address</Text>
@@ -368,7 +433,7 @@ navigation.addListener('focus', onFocus);
            </View>
             )}
 
-            {recipient?.emailAddress && 
+            {(recipient?.customerRecipientId || recipient?.emailAddress) && 
             <Recipient recipient={recipient} />
 
             }
@@ -403,7 +468,12 @@ navigation.addListener('focus', onFocus);
                     currencyId: newBalanceData.currencyId,
                     transactionTypeId: 1,
                     amount: amount,
-                    payPalEmailAddress: emailAddress
+                    emailAddress: emailAddress,
+                    recipientId: recipient?.recipientId,
+                    firstName: recipient?.firstName,
+                    lastName: recipient?.lastName,
+                    bicswift: recipient?.bicswift,
+                    accountNumber: recipient?.accountNumber
                   }, true, setIsLoading);
 
                   if (result.status == 200) {
@@ -415,8 +485,8 @@ navigation.addListener('focus', onFocus);
               }}
               disabled={
                 isNoAmountError || !amount || 
-                (!emailAddress && transferType?.transferTypeId == 2) || 
-                (transferType.transferTypeId == 4 && recipient?.flag)
+                (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
+                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
               }
               style={{
                 marginTop: 'auto',
@@ -427,8 +497,8 @@ navigation.addListener('focus', onFocus);
                 alignItems: 'center',
                 backgroundColor:
                 isNoAmountError  || !amount ||
-                (!emailAddress && transferType?.transferTypeId == 2) || 
-                (transferType.transferTypeId == 4 && recipient?.flag)
+                (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
+                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
                   ? '#2A2C29'
                   : isSendPressed
                   ? 'white'
@@ -492,6 +562,48 @@ navigation.addListener('focus', onFocus);
               </View>
             }
           />
+{transferType.transferTypeId == 9 &&
+<BottomSheet
+            bottomSheetModalRef={bottomSheetRecipientModalRef}
+            snapPoints={['90%']}
+            title={'Select recipient'}
+            content={
+              <View>
+                <View style={{ marginBottom: 20, marginTop: 10 }}>
+                  <InputSearch
+                    borderColor="white"
+                    searchData={(value) => {
+                      setRecipientSearchText(value);
+                    }}
+                  />
+                </View>
+                <ScrollView>
+                  {recipients
+                    ?.filter(
+                      (x) =>
+                        !recipientSearchText ||
+                        (x.firstName + ' ' + x.lastName)
+                          .toLowerCase()
+                          .includes(recipientSearchText.toLowerCase())
+                    )
+                    ?.map((recipientData, index) => (
+                      <RecipientItem
+                        key={index}
+                        recipientId={recipient}
+                        isRadioButton={true}
+                        recipientData={recipientData}
+                        callback={async () => {
+                          recipientSearchText.current.close();
+
+                          setRecipient(recipientData);
+                        }}
+                      />
+                    ))}
+                </ScrollView>
+              </View>
+            }
+          />
+          }
 
         </View>
       )}

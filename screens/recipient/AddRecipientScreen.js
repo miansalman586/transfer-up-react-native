@@ -312,7 +312,7 @@ const handleIBANBlur = async () => {
 
 
 
-                {currency?.currencyId == 3 && transferType?.transferTypeId == 8 &&
+                {(currency?.currencyId == 3 || currency?.currencyId == 5) && transferType?.transferTypeId == 9 &&
 <View>
 
 
@@ -352,7 +352,7 @@ const handleIBANBlur = async () => {
 }
 
 
-{currency?.currencyId == 2 && transferType?.transferTypeId == 8 &&
+{currency?.currencyId == 2 && transferType?.transferTypeId == 9 &&
 <View>
 
            
@@ -457,9 +457,9 @@ const handleIBANBlur = async () => {
                     } 
               }}
               disabled={(!emailAddress && transferType?.transferTypeId == 2) || 
-                (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
-                (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
-                (!iban && transferType?.transferTypeId == 8 && currency?.currencyId == 3) ||
+                (!bic && transferType?.transferTypeId == 9 && currency?.currencyId == 2) ||
+                (!accountNumber && transferType?.transferTypeId == 9 && currency?.currencyId == 2) ||
+                (!iban && transferType?.transferTypeId == 9 && (currency?.currencyId == 3 || currency?.currencyId == 5)) ||
                 !firstName || 
                 !lastName || 
                 !currency || 
@@ -473,9 +473,9 @@ const handleIBANBlur = async () => {
                 alignItems: 'center',
                 backgroundColor:
                 (!emailAddress && transferType?.transferTypeId == 2)|| 
-                (!bic && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
-                (!accountNumber && transferType?.transferTypeId == 8 && currency?.currencyId == 2) ||
-                (!iban && transferType?.transferTypeId == 8 && currency?.currencyId == 3) ||
+                (!bic && transferType?.transferTypeId == 9 && currency?.currencyId == 2) ||
+                (!accountNumber && transferType?.transferTypeId == 9 && currency?.currencyId == 2) ||
+                (!iban && transferType?.transferTypeId == 9 && (currency?.currencyId == 3 || currency?.currencyId == 5)) ||
                 !firstName || 
                 !lastName || 
                 !currency || 

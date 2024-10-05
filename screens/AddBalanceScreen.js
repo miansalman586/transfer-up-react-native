@@ -77,7 +77,10 @@ export default function AddBalanceScreen({ route, navigation }) {
         false,
         setIsLoading
       );
-      setTransactionTypes(transactionType.data);
+      if (transactionType.status == 200) {
+        transactionType = await transactionType.json();
+      setTransactionTypes(transactionType);
+      }
     }
   };
 
@@ -243,7 +246,7 @@ export default function AddBalanceScreen({ route, navigation }) {
                   true,
                   setIsLoading
                 );
-                if (result.success) {
+                if (result.status == 200) {
                   navigation.navigate('HomeTab');
                 } else {
                   Alert.alert('Error', result.message);
