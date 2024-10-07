@@ -17,7 +17,9 @@ import ChangePasswordScreen from '../screens/manage/ChangePasswordScreen';
 import FindMeByScreen from '../screens/manage/FindMeByScreen';
 import ChangeEmailAddressScreen from '../screens/manage/ChangeEmailAddressScreen';
 import NotificationScreen from '../screens/NotificationScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import ChangePhoneNumberScreen from '../screens/profile/ChangePhoneNumberScreen';
+import ChangePhoneNumberOTPScreen from '../screens/profile/ChangePhoneNumberOTPScreen';
 
 const Stack = createStackNavigator();
 
@@ -153,6 +155,24 @@ export default function StackNavigator() {
         />
 
       
+<Stack.Screen
+          name="ChangePhoneNumber"
+          component={ChangePhoneNumberScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+    
+<Stack.Screen
+          name="ChangePhoneNumberOTP"
+          component={ChangePhoneNumberOTPScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );

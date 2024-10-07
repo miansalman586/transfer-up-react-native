@@ -106,6 +106,16 @@ export default function HomeTab({ navigation }) {
       global.currencies = currencies;
     });
 
+    httpRequest(
+      'public/get-country',
+      'get',
+      null,
+      false
+    ).then(async countries => {
+      countries = await countries.json();
+      global.countries = countries;
+    });
+
      httpRequest(
       'public/get-transfer-type',
       'get',
@@ -127,13 +137,17 @@ export default function HomeTab({ navigation }) {
       const firstName = decodedToken[keys[2]];
       const lastName = decodedToken[keys[3]];
       const emailAddress = decodedToken[keys[4]];
+      const countryCode = decodedToken[keys[5]];
+      const phoneNumber = decodedToken[keys[6]];
 
       global.user = {
         role: role,
         id: id,
         firstName: firstName,
         lastName: lastName,
-        emailAddress: emailAddress
+        emailAddress: emailAddress,
+        countryCode: countryCode,
+        phoneNumber: phoneNumber
       }
     })
   };

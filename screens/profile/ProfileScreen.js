@@ -1,16 +1,16 @@
 import { View, ScrollView, TextInput, Pressable, Text } from 'react-native';
 
-import GoBackTopBar from '../components/GoBackTopBar';
-import ScreenLoader from '../components/ScreenLoader';
+import GoBackTopBar from '../../components/GoBackTopBar';
+import ScreenLoader from '../../components/ScreenLoader';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-import formateFullDate from '../utils/formateFullDate';
+import formateFullDate from '../../utils/formateFullDate';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import httpRequest from '../utils/httpRequest';
+import httpRequest from '../../utils/httpRequest';
 
-import pickImage from '../utils/pickImage';
+import pickImage from '../../utils/pickImage';
 
 import { useState, useEffect } from 'react';
 
@@ -27,6 +27,17 @@ export default function ProfileScreen({ route, navigation }) {
     setZipCode(result?.zipCode?.toString());
   }
   };
+
+  const [isSeeAllPressed, setIsSeeAllPressed] = useState(false);
+
+  const handleSeeAllPressIn = () => {
+    setIsSeeAllPressed(true);
+  };
+
+  const handleSeeAllRPressOut = () => {
+    setIsSeeAllPressed(false);
+  };
+
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
 
@@ -91,6 +102,28 @@ const handleZipCodeFocus = () => {
       </Text>
           <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ marginLeft: 20, marginTop: 10 }}>
+
+          <Text style={{ color: 'white', marginTop:10}}>Country of residence</Text>
+                <TextInput
+                editable={false}
+                  style={{
+                    marginRight: 20,
+                    marginBottom: 40,
+                    color: 'white',
+                    fontSize: 18,
+                    height: 50,
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    backgroundColor: '#2A2C29',
+                    borderColor:
+                      '#2A2C29',
+                    borderWidth: 2,
+                    marginTop: 10,
+                  }}
+                  value={profile?.country?.toString()}
+                  selectionColor="#2a80b9"
+                />
+
           <Text style={{ color: 'white' }}>Personal details</Text>
         </View>
         <View
@@ -276,6 +309,24 @@ const handleZipCodeFocus = () => {
                   value={profile?.countryCode + profile?.phoneNumber.toString()}
                   selectionColor="#2a80b9"
                 />
+
+<Pressable
+                onPress={() => {
+                  navigation.navigate('ChangePhoneNumber');
+                }}
+                onPressIn={handleSeeAllPressIn}
+                onPressOut={handleSeeAllRPressOut}>
+                <Text
+                  style={{
+                    alignSelf: 'center',
+                    color: isSeeAllPressed ? 'white' : '#2a80b9',
+                    fontSize: 18,
+                    marginTop: 20,
+                    textDecorationLine: 'underline',
+                  }}>
+                  Change phone number
+                </Text>
+              </Pressable>
 </View>
 
 <View style={{ marginLeft: 20, marginTop: 40 }}>

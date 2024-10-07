@@ -8,18 +8,12 @@ import {
   Alert,
   Pressable,
 } from 'react-native';
-import ScreenLoader from '../../../components/ScreenLoader';
+import ScreenLoader from '../../components/ScreenLoader';
 
-import * as MerchantSettingService from '../../../services/settings/MerchantSettingService';
-import * as CustomerSettingService from '../../../services/settings/CustomerSettingService';
-
-import * as GlobalService from '../../../services/GlobalService';
-
-import GoBackTopBar from '../../../components/GoBackTopBar';
-import httpRequest from '../../../utils/httpRequest';
+import GoBackTopBar from '../../components/GoBackTopBar';
+import httpRequest from '../../utils/httpRequest';
 
 export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
-  const [phoneNumber, setPhoneNumber] = useState(null);
   const [isPressed, setIsPressed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,12 +23,6 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
   const {
     newPhoneNumber,
     newCountryCode,
-    appSecurityData,
-    cityId,
-    address,
-    zipCode,
-    addressVerificationDocumentId,
-    addressVerificationDocument,
   } = route.params;
 
   const newPhoneRefs = useRef(
@@ -63,72 +51,27 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
     ) {
       handleRelease();
 
-      if (global.entityId == 1) {
-        let result = await MerchantSettingService.changePhoneNumber(
-          appSecurityData,
-          phoneCode.join(''),
-          newPhoneCode.join(''),
-          newPhoneNumber,
-          newCountryCode,
-          cityId,
-          address,
-          zipCode,
-          addressVerificationDocumentId,
-          addressVerificationDocument,
-          setIsLoading,
-          navigation
-        );
-        if (result.Success) {
-          await GlobalService.logout(navigation, global.entityId);
-        } else {
-          Alert.alert('Error', result.Message);
-        }
-      } else if (global.entityId == 2) {
-        let result = await CustomerSettingService.changePhoneNumber(
-          appSecurityData,
-          phoneCode.join(''),
-          newPhoneCode.join(''),
-          newPhoneNumber,
-          newCountryCode,
-          cityId,
-          address,
-          zipCode,
-          addressVerificationDocumentId,
-          addressVerificationDocument,
-          setIsLoading,
-          navigation
-        );
-        if (result.Success) {
-          await GlobalService.logout(navigation, global.entityId);
-        } else {
-          Alert.alert('Error', result.Message);
-        }
+      let result = await httpRequest('customer/change-phone-number', 'post', {
+        oldOTPCode: parseInt(phoneCode.toString().replace(/,/g, '')),
+        newOTPCode: parseInt(newPhoneCode.toString().replace(/,/g, '')),
+        countryCode: newCountryCode,
+        newPhoneNumber: parseInt(newPhoneNumber)
+      }, true, setIsLoading);
+      if (result.status == 200) {
+        navigation.goBack();
+      } else if (result.status == 400) {
+        Alert.alert('Error', 'OTP Code expired or not found.');
       }
     }
   };
 
   const sendOTP = async () => {
-    if (global.entityId == 1) {
-      await MerchantSettingService.changePhoneNumberOTP(
-        newPhoneNumber,
-        newCountryCode,
-        setIsLoading,
-        navigation
-      );
-    } else if (global.entityId == 2) {
-      await CustomerSettingService.changePhoneNumberOTP(
-        newPhoneNumber,
-        newCountryCode,
-        setIsLoading,
-        navigation
-      );
-    }
+   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((global.user?.countryCode + global.user?.phoneNumber)), 'get', null, false, null);
+  httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((newCountryCode + newPhoneNumber)), 'get', null, false, null);
   };
 
   const onFocus = async () => {
     sendOTP();
-
-    setPhoneNumber(global.countryCode + global.phoneNumber);
   };
 
   useEffect(() => {
@@ -167,13 +110,9 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
                 OTP Verification
               </Text>
               <Text style={{ fontSize: 16, marginTop: 40, color: 'white' }}>
-                Enter the OTP sent to Phone Number
+                Enter the OTP sent to your existing Phone Number
               </Text>
-              <Text
-                style={{ marginTop: 5, color: 'white', fontWeight: 'bold' }}>
-                {phoneNumber}
-              </Text>
-              <View style={{ marginTop: 20, flexDirection: 'row' }}>
+              <View style={{ marginTop: 40, flexDirection: 'row' }}>
                 {phoneCode.map((digit, index) => (
                   <TextInput
                     key={index}
@@ -197,7 +136,8 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
                       marginRight: 10,
                       paddingTop: 15,
                       paddingBottom: 15,
-                      paddingLeft: 25,
+                      paddingLeft: 20,
+                      fontSize: 20,
                       paddingRight: 20,
                       flex: 1,
                       height: 60,
@@ -239,6 +179,8 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
                       paddingBottom: 15,
                       paddingLeft: 25,
                       paddingRight: 20,
+                      paddingLeft: 20,
+                      fontSize: 20,
                       flex: 1,
                       height: 60,
                       color: 'white',
