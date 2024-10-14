@@ -23,15 +23,15 @@ export default function CurrencyItem({
       <View style={{ flexDirection: 'row' }}>
         <Image
           style={{
-            width: 55,
-            height: 55,
-            borderRadius: 27.5,
+            width: 50,
+            height: 50,
+            borderRadius: 25,
             marginRight: 20,
             backgroundColor: '#2A2C29',
             justifyContent: 'center',
             alignItems: 'center',
           }}
-          source={{}}
+          source={{uri:'data:image/jpeg;base64,' + currencyData.currencyFlag}}
         />
         <View style={{ marginTop: 3, flex: 1 }}>
           <Text

@@ -30,7 +30,14 @@ export default function TransferTypeItem({ transferTypeId, transferTypeData, cal
           }}>
           {transferTypeData.transferTypeId == 2 && (
             <FontAwesome
-              name={transferTypeData.transferTypeId == 2 ? 'paypal' : ''}
+              name={ 'paypal'}
+              size={23.5}
+              color={'white'}
+            />
+          )}
+             {transferTypeData.transferTypeId == 9 && (
+            <FontAwesome
+              name={'bank'}
               size={23.5}
               color={'white'}
             />

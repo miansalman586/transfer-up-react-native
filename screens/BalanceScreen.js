@@ -112,7 +112,7 @@ export default function BalanceScreen({ route, navigation }) {
       true,
       setIsLoading
     );
-    if (!result.success) {
+    if (!result.status == 200) {
       setIsAutoWithdrawalRequest(!isAutoWithdrawalRequest);
       Alert.alert('Error', result.Message);
     }
@@ -127,7 +127,7 @@ export default function BalanceScreen({ route, navigation }) {
       true,
       setIsLoading
     );
-    if (!result.success) {
+    if (!result.status == 200) {
       setIsAutoConversion(!isAutoConversion);
       Alert.alert('Error', result.Message);
     }
@@ -142,7 +142,7 @@ export default function BalanceScreen({ route, navigation }) {
       true,
       setIsLoading
     );
-    if (!result.success) {
+    if (!result.status == 200) {
       setIsPrimary(isPrimary);
       Alert.alert('Error', result.Message);
     }
@@ -194,15 +194,17 @@ export default function BalanceScreen({ route, navigation }) {
             <View style={{ marginLeft: 20, marginRight: 20 }}>
               <Image
                 style={{
-                  width: 55,
-                  height: 55,
+                  width: 50,
+                  height: 50,
                   marginTop: 10,
-                  borderRadius: 27.5,
+                  borderRadius: 25,
                   backgroundColor: '#2A2C29',
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                source={{}}
+                source={{
+                  uri: 'data:image/jpeg;base64,' + balanceData?.currencyFlag,
+                }}
               />
               <Text style={{ color: 'white', marginTop: 20, fontSize: 24 }}>
                 {balanceData?.currency} Balance
@@ -316,6 +318,7 @@ export default function BalanceScreen({ route, navigation }) {
                 </View>
                 <View style={{ alignItems: 'center' }}>
                   <Pressable
+                  disabled={!balanceData?.totalBalance > 0.0}
                     onPressIn={handleSendPressIn}
                     onPressOut={handleSendPressOut}
                     onPress={() => {
@@ -535,18 +538,16 @@ export default function BalanceScreen({ route, navigation }) {
                   />
                 </View>
                 <ScrollView>
-                  {global.transferTypes
+                  {global.transferTypes?.filter(
+                      (e) => e.transactionTypeId == 2
+                    )
                     ?.filter(
                       (x) =>
                         !addTransferTypeSearchText ||
                         x.transferTypeName
                           .toLowerCase()
                           .includes(addTransferTypeSearchText.toLowerCase())
-                    )
-                    ?.filter(
-                      (e) => e.transferTypeId != 3 && e.transferTypeId != 4
-                    )
-                    ?.map((transferTypeData, index) => (
+                    )?.map((transferTypeData, index) => (
                       <TransferTypeItem
                         key={index}
                         transferTypeData={transferTypeData}
@@ -588,7 +589,7 @@ export default function BalanceScreen({ route, navigation }) {
                           .includes(sendTransferTypeSearchText.toLowerCase())
                     )
                     ?.filter(
-                      (e) => e.transferTypeId != 3 
+                      (e) => e.transactionTypeId == 1
                     )
                     ?.map((transferTypeData, index) => (
                       <TransferTypeItem
@@ -695,10 +696,11 @@ export default function BalanceScreen({ route, navigation }) {
                             text: 'Close',
                             style: 'destructive',
                             onPress: async () => {
-                              let result = await httpRequest('customer/close-balance', 'put', {
-                                currencyId: balanceData.currencyId
+                              let result = await httpRequest('customer/update-balance-status', 'put', {
+                                currencyId: balanceData.currencyId,
+                                balanceStatusId: 2
                               }, true, setIsLoading);
-                              if (result.success) {
+                              if (result.status == 200) {
                                 navigation.goBack();
                               } else {
                                 Alert.alert('Error', result.Message);

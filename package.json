@@ -22,7 +22,6 @@
     "expo-contacts": "~13.0.5",
     "expo-document-picker": "~12.0.2",
     "expo-file-system": "~17.0.1",
-    "expo-image-picker": "~15.0.7",
     "expo-local-authentication": "~14.0.1",
     "expo-permissions": "~14.2.1",
     "expo-secure-store": "~13.0.2",
@@ -45,7 +44,8 @@
     "react-native-svg": "15.2.0",
     "react-native-tab-view": "^3.0.0",
     "react-native-vector-icons": "*",
-    "react-navigation": "*"
+    "react-navigation": "*",
+    "expo-image-picker": "~15.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

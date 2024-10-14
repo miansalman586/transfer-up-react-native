@@ -38,7 +38,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
   const handleGoBackRelease = () => {
     setIsGoBackPressed(false);
   };
-
+  
   const [isPayPalLinkPressed, setIsPayPalLinkPressed] = useState(false);
 
   const handlePayPalLinkPressIn = () => {
@@ -47,6 +47,16 @@ export default function TransactionDetailScreen({ route, navigation }) {
 
   const handlePayPalLinkPressOut = () => {
     setIsPayPalLinkPressed(false);
+  };
+
+  const [isPayPalFeeLinkPressed, setIsPayPalFeeLinkPressed] = useState(false);
+
+  const handlePayPalFeeLinkPressIn = () => {
+    setIsPayPalFeeLinkPressed(true);
+  };
+
+  const handlePayPalFeeLinkPressOut = () => {
+    setIsPayPalFeeLinkPressed(false);
   };
 
   const [isTransactionNumberPressed, setIsTransactionNumberPressed] = useState(false);
@@ -462,7 +472,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                 )}
 
 
-                {transactionData?.transactionTypeId == 1 && (
+                {transactionData?.transactionStatusId != 4 && transactionData?.transactionStatusId != 5 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2)) && (
                   <View>
                     <View
                       style={{
@@ -479,7 +489,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
                       }}>
                       Fee Details
                     </Text>
-                    <View
+                    {(transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2)) &&
+  <View
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
@@ -494,7 +505,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         {transactionData?.currency}
                       </Text>
                     </View>
-                    {transactionData?.transactionTypeId == 1 && (
+                    }
+                      {transactionData?.transactionTypeId == 1 && (
                       <View
                         style={{
                           flexDirection: 'row',
@@ -519,7 +531,78 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         </Text>
                       </View>
                     )}
-                    {transactionData?.payPalTransactionFee > 0 && (
+                  {((transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 2) ||
+                   (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2)) &&
+               
+ <Pressable
+ onPressIn={handlePayPalFeeLinkPressIn}
+ onPressOut={handlePayPalFeeLinkPressOut}
+ onPress={() => {
+   Linking.openURL(
+     'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+   );
+ }}
+ onLongPress={async () => {
+   await Clipboard.setStringAsync(
+     'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+   );
+   showToast('Copied!');
+ }}>
+  <Text style={{
+      color:'white',
+      fontSize: 16,
+      marginTop: 20,
+      lineHeight:25,
+  }}>
+  PayPal may charge fee please refer to this link 
+  </Text>
+ <Text
+   style={{
+     color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+     textDecorationLine: 'underline',
+     fontSize: 16,
+   }}>
+  PayPal Merchant Fee
+ </Text>
+</Pressable>
+                  }
+
+{((transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 9)) &&
+               
+ <Pressable
+ onPressIn={handlePayPalFeeLinkPressIn}
+ onPressOut={handlePayPalFeeLinkPressOut}
+ onPress={() => {
+   Linking.openURL(
+     'https://wise.com/pricing/'
+   );
+ }}
+ onLongPress={async () => {
+   await Clipboard.setStringAsync(
+     'https://wise.com/pricing/'
+   );
+   showToast('Copied!');
+ }}>
+  <Text style={{
+      color:'white',
+      fontSize: 16,
+      marginTop: 20,
+      lineHeight:25,
+  }}>
+  {transactionData?.transferType} may charge fee please refer to this link 
+  </Text>
+ <Text
+   style={{
+     color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+     textDecorationLine: 'underline',
+     fontSize: 16,
+   }}>
+  {transactionData?.transferType} pricing
+ </Text>
+</Pressable>
+                  }
+                  
+                    {transactionData?.transactionOrderFee > 0 && (
      <View
      style={{
        flexDirection: 'row',
@@ -527,41 +610,33 @@ export default function TransactionDetailScreen({ route, navigation }) {
      }}>
      <Text
        style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
-       PayPal Fee
+       {transactionData?.transferType} Fee
      </Text>
      <Text
        style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
-       {transactionData?.payPalTransactionFee}{' '}
+       {transactionData?.transactionOrderFee}{' '}
        {transactionData?.currency}
      </Text>
    </View>
                    )}
-               
-                    {transactionData?.transactionTypeId == 1 && transactionData?.transactionStatusId == 3 && (
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <Text
-                          style={{
-                            color: 'white',
-                            fontSize: 16,
-                            marginTop: 20,
-                          }}>
-                          Received Amount
-                        </Text>
-                        <Text
-                          style={{
-                            color: 'white',
-                            fontSize: 16,
-                            marginTop: 20,
-                          }}>
-                          {transactionData?.receivedAmount}{' '}
-                          {transactionData?.currency}
-                        </Text>
-                      </View>
-                    )}
+                   {transactionData?.transactionTypeId == 1 && transactionData?.transactionStatusId == 3 && (
+     <View
+     style={{
+       flexDirection: 'row',
+       justifyContent: 'space-between',
+     }}>
+     <Text
+       style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
+       Received
+     </Text>
+     <Text
+       style={{ color: 'white', fontSize: 16, marginTop: 20 }}>
+       {transactionData?.receivedAmount}{' '}
+       {transactionData?.currency}
+     </Text>
+   </View>
+                   )}
+                 
                   </View>
                 )}
 
@@ -584,7 +659,31 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         Bank Details
                       </Text>
                    
-                    
+                      {transactionData?.name  && (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              Full Name
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             {transactionData?.name}
+                            </Text>
+                          </View>
+                        )}
+
                         { transactionData?.bicswift  &&
                           <View
                             style={{
@@ -610,7 +709,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           </View>
 }
               
-{ transactionData?.accountNumber  &&
+  { transactionData?.accountNumber  &&
                           <View
                             style={{
                               flexDirection: 'row',
@@ -635,13 +734,40 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           </View>
 }
 
+{ transactionData?.iban  &&
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             IBAN
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              {transactionData.iban}
+                            </Text>
+                          </View>
+}
+
 
                    
                     </View>
                   )}
 
 
-                {transactionData?.transferTypeId == 2 
+                {(((transactionData?.transactionStatusId == 4 || transactionData?.transactionStatusId == 5) && transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 2) || 
+                (transactionData?.transactionStatusId != 4 && (transactionData?.transactionTypeId == 1 || transactionData?.transactionTypeId == 2) && transactionData?.transferTypeId == 2 && !transactionData?.orderURL) || 
+                (transactionData?.orderURL && (transactionData?.transactionStatusId == 1 || transactionData?.transactionStatusId == 3)))
                   && (
                     <View>
                       <View
@@ -684,7 +810,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                             </Text>
                           </View>
                         )}
-                        { transactionData?.payPalEmailAddress  &&
+                        { transactionData?.emailAddress  &&
                           <View
                             style={{
                               flexDirection: 'row',
@@ -704,23 +830,23 @@ export default function TransactionDetailScreen({ route, navigation }) {
                                 fontSize: 16,
                                 marginTop: 20,
                               }}>
-                              {transactionData.payPalEmailAddress}
+                              {transactionData.emailAddress}
                             </Text>
                           </View>
 }
                     
-                      {transactionData?.payPalOrderCaptureURL && (
+                      {transactionData?.orderURL && transactionData?.transactionStatusId == 1 && (
                         <Pressable
                           onPressIn={handlePayPalLinkPressIn}
                           onPressOut={handlePayPalLinkPressOut}
                           onPress={() => {
                             Linking.openURL(
-                              transactionData?.payPalOrderCaptureURL
+                              transactionData?.orderURL
                             );
                           }}
                           onLongPress={async () => {
                             await Clipboard.setStringAsync(
-                              transactionData?.payPalOrderCaptureURL
+                              transactionData?.orderURL
                             );
                             showToast('Copied!');
                           }}>
@@ -731,22 +857,21 @@ export default function TransactionDetailScreen({ route, navigation }) {
                               fontSize: 16,
                               marginTop: 20,
                             }}>
-                            {transactionData?.payPalOrderCaptureURL}
+                            {transactionData?.orderURL}
                           </Text>
                         </Pressable>
                       )}
-                      {transactionData?.paypalTransactionTypeId == 1 &&
+                      {(transactionData?.paypalTransactionTypeId == 1 || (transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 2 && transactionData?.transactionStatusId == 3)) &&
                       <View>
-                        {transactionData?.transactionStatusId == 1 &&
+                        {transactionData?.transactionStatusId == 1 && transactionData?.paypalTransactionTypeId == 1 &&
   <Text
   style={{
     color:'white',
     fontSize: 16,
     marginTop: 20,
     lineHeight:25,
-    fontWeight: 'bold'
   }}>
-  Please send the payment to our PayPal email address and include the transaction number in the notes while you are sending money otherwise, we won't be able to track your payment.
+  Please send exactly <Text style={{fontWeight: 'bold'}}>{transactionData?.totalAmount} {transactionData?.currency}</Text> to our PayPal email address <Text style={{fontWeight: 'bold'}}>{transactionData?.payPalAccountEmailAddress}</Text> and include the transaction number <Text style={{fontWeight: 'bold'}}>{transactionData?.transactionId}</Text> in the notes while you are sending money otherwise, we won't be able to track your payment.
 </Text>
                         }
                     
@@ -763,6 +888,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         Email Address
                       </Text>
                       <Pressable
+                      disabled={!(transactionData?.transactionStatusId == 1 && transactionData?.paypalTransactionTypeId == 1)}
   onPressIn={handlePayPalAccountEmailAddressPressIn}
   onPressOut={handlePayPalAccountEmailAddressPressOut}
 onLongPress={async () => {
@@ -774,7 +900,7 @@ showToast('Copied!');
                     
                       <Text
                         
-                        style={{  textDecorationLine: 'underline',    color: isPayPalAccountEmailAddressPressed ? 'white' : '#2a80b9', fontSize: 16, marginTop: 20, }}>
+                        style={{  textDecorationLine: transactionData?.transactionStatusId == 1 && transactionData?.paypalTransactionTypeId == 1 ? 'underline' : 'none',    color: isPayPalAccountEmailAddressPressed ? 'white' : transactionData?.transactionStatusId == 1 && transactionData?.paypalTransactionTypeId == 1 ? '#2a80b9' : 'white', fontSize: 16, marginTop: 20, }}>
                         {transactionData?.payPalAccountEmailAddress}
                         
                       </Text>
@@ -846,7 +972,7 @@ showToast('Copied!');
       onPress={async () => {
         handleContinuePressOut();
         let result = await httpRequest(
-          'customer/update-customer-transaction-status',
+          'customer/update-transaction-status',
           'put',
           {
             transactionId: transactionId,
@@ -855,7 +981,7 @@ showToast('Copied!');
           true,
           setIsLoading
         );
-        if (result.success) {
+        if (result.status == 200) {
           navigation.navigate('HomeTab');
         } else {
           Alert.alert('Error', result.message);

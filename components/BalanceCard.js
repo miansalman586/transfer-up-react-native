@@ -11,7 +11,7 @@ export default function BalanceCard({ navigation, balanceData }) {
         paddingTop: 20,
         paddingLeft: 20,
         paddingRight: 20,
-        paddingBottom: 25,
+        paddingBottom: 20,
         height: 220,
         width: 220,
         marginRight: 20,
@@ -21,14 +21,14 @@ export default function BalanceCard({ navigation, balanceData }) {
       }}>
       <Image
         style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
+          width: 50,
+          height: 50,
+          borderRadius: 25,
           justifyContent: 'center',
           alignItems: 'center',
         }}
         source={{
-          uri: balanceData.image,
+          uri: 'data:image/jpeg;base64,' + balanceData.currencyFlag,
         }}
       />
       <View>

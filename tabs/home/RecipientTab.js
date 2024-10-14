@@ -12,7 +12,8 @@ import {useEffect} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getSetting } from '../../utils/common';
 
-export default function RecipientTab({navigation}) {
+export default function RecipientTab({route, navigation}) {
+
     const [isAddPressed, setIsAddPressed] = useState(false);
     const [currentScreen, setCurrentScreen] = useState(null);
     const [hasPermission, setHasPermission] = useState(false);
@@ -23,7 +24,7 @@ export default function RecipientTab({navigation}) {
     const [recipients, setRecipients] = useState(null);
 
     const onFucus = async ()=>{
-
+   
 let firstId = null;
 
   let result = await httpRequest('customer/get-recipient-transfer-type', 'get', null, true, null);

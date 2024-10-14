@@ -10,6 +10,7 @@ import ScreenLoader from '../../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as ImagePicker from 'expo-image-picker';
 import PressableButton from '../../components/PressableButton';
+import * as FileSystem from 'expo-file-system';
 
 import * as Clipboard from 'expo-clipboard';
 
@@ -29,6 +30,7 @@ import { useState, useEffect } from 'react';
 import ItemLoader from '../../components/ItemLoader';
 
 import CustomToast from '../../components/CustomToast';
+import httpRequest from '../../utils/httpRequest';
 
 export default function ManageTab({ route, navigation }) {
   const [image, setImage] = useState(null);
@@ -36,17 +38,13 @@ export default function ManageTab({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const onFocus = async () => {
+    let apiResult = await httpRequest('customer/get-profile-image', 'get', null, true, null);
+    if (apiResult.status == 200) {
+      apiResult = await apiResult.json();
+      setImage('data:image/jpeg;base64,' + apiResult.image); 
+    }
   };
 
-  const [isOtherAccountPressed, setIsOtherAccountPressed] = useState(false);
-
-  const handleOtherAccountPressIn = () => {
-    setIsOtherAccountPressed(true);
-  };
-
-  const handleOtherAccountRelease = () => {
-    setIsOtherAccountPressed(false);
-  };
 
   const [isSettingsPressed, setIsSettingsPressed] = useState(false);
 
@@ -106,7 +104,7 @@ export default function ManageTab({ route, navigation }) {
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    var result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
@@ -114,7 +112,15 @@ export default function ManageTab({ route, navigation }) {
     });
     
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets[0].uri); 
+      const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      let apiResult = await httpRequest('customer/upload-profile-image', 'post', {
+        base64: base64
+      }, true, setIsLoading);
+      if (apiResult.status == 200) {
+        setImage(result.assets[0].uri); 
+      }
     }
   };
   
@@ -148,7 +154,7 @@ export default function ManageTab({ route, navigation }) {
          }}>
           </View>
           <ScrollView  showsVerticalScrollIndicator={false}>
-            <View style={{  alignItems: 'center' }}>
+            <View style={{ marginTop: 40, alignItems: 'center' }}>
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => {
@@ -156,9 +162,9 @@ export default function ManageTab({ route, navigation }) {
                 }}>
                 <Image
                   style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
+                    width: 70,
+                    height: 70,
+                    borderRadius: 35,
                   }}
                   source={{
                     uri: image,

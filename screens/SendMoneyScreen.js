@@ -7,12 +7,15 @@ import {
   Image,
   Alert,
   TouchableOpacity,
-  useWindowDimensions
+  useWindowDimensions,
+  Linking
 } from 'react-native';
 import ScreenLoader from '../components/ScreenLoader';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+
+import * as Clipboard from 'expo-clipboard';
 
 import Recipient from '../components/Recipient';
 
@@ -55,6 +58,16 @@ export default function SendMoneyScreen({ route, navigation }) {
 
   const [recipient, setRecipient] = useState({});
   const [recipients, setRecipients] = useState([]);
+
+  const [isPayPalFeeLinkPressed, setIsPayPalFeeLinkPressed] = useState(false);
+
+  const handlePayPalFeeLinkPressIn = () => {
+    setIsPayPalFeeLinkPressed(true);
+  };
+
+  const handlePayPalFeeLinkPressOut = () => {
+    setIsPayPalFeeLinkPressed(false);
+  };
 
 
   const handleEmailAddressFocus = () => {
@@ -229,7 +242,7 @@ navigation.addListener('focus', onFocus);
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}
-                      source={{}}
+                      source={{uri:'data:image/jpeg;base64,' + newBalanceData?.currencyFlag}}
                     />
                     <Text
                       style={{
@@ -347,6 +360,77 @@ navigation.addListener('focus', onFocus);
                 </View>
                 </View>
               )}
+
+{transferType?.transferTypeId == 2 &&
+             <Pressable
+             onPressIn={handlePayPalFeeLinkPressIn}
+             onPressOut={handlePayPalFeeLinkPressOut}
+             onPress={() => {
+               Linking.openURL(
+                 'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+               );
+             }}
+             onLongPress={async () => {
+               await Clipboard.setStringAsync(
+                 'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+               );
+               showToast('Copied!');
+             }}>
+              <Text style={{
+                  color:'white',
+                  marginTop: 10,
+                  fontSize: 16,
+                  lineHeight:25,
+              }}>
+              PayPal may charge fee please refer to this link 
+              </Text>
+             <Text
+               style={{
+                 color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+                 textDecorationLine: 'underline',
+                 fontSize: 16,
+               }}>
+              PayPal Merchant Fee
+             </Text>
+            </Pressable>
+
+            }
+
+            
+{((transferType?.transferTypeId == 9)) &&
+               
+               <Pressable
+               onPressIn={handlePayPalFeeLinkPressIn}
+               onPressOut={handlePayPalFeeLinkPressOut}
+               onPress={() => {
+                 Linking.openURL(
+                   'https://wise.com/pricing/'
+                 );
+               }}
+               onLongPress={async () => {
+                 await Clipboard.setStringAsync(
+                   'https://wise.com/pricing/'
+                 );
+                 showToast('Copied!');
+               }}>
+                <Text style={{
+                    color:'white',
+                    fontSize: 16,
+                    marginTop: 10,
+                    lineHeight:25,
+                }}>
+                Bank may charge fee please refer to this link 
+                </Text>
+               <Text
+                 style={{
+                   color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+                   textDecorationLine: 'underline',
+                   fontSize: 16,
+                 }}>
+                Bank pricing
+               </Text>
+              </Pressable>
+                                }
               </View>
             }
 
@@ -437,6 +521,8 @@ navigation.addListener('focus', onFocus);
             <Recipient recipient={recipient} />
 
             }
+
+        
         
           </ScrollView>
           <View
@@ -473,7 +559,8 @@ navigation.addListener('focus', onFocus);
                     firstName: recipient?.firstName,
                     lastName: recipient?.lastName,
                     bicswift: recipient?.bicswift,
-                    accountNumber: recipient?.accountNumber
+                    accountNumber: recipient?.accountNumber,
+                    iban: recipient?.iban
                   }, true, setIsLoading);
 
                   if (result.status == 200) {

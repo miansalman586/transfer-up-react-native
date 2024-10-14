@@ -167,7 +167,7 @@ export default function AddBalanceScreen({ route, navigation }) {
                       justifyContent: 'center',
                       alignItems: 'center',
                     }}
-                    source={{}}
+                    source={{uri:'data:image/jpeg;base64,' + newBalanceData?.currencyFlag}}
                   />
                   <Text
                     style={{

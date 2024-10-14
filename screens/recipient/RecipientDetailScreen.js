@@ -35,7 +35,11 @@ const handleSendMoneyPressIn = () => {
       transferTypeId: recipientDetail?.transferTypeId,
       emailAddress: recipientDetail?.emailAddress,
       bicswift: recipientDetail?.bicswift,
-      accountNumber: recipientDetail?.accountNumber
+      accountNumber: recipientDetail?.accountNumber,
+      iban: recipientDetail?.iban,
+      recipientId: recipientDetail?.recipientId,
+      firstName: recipientDetail?.firstName,
+      lastName: recipientDetail?.lastName,
     }, true, setIsLoading);
     if (!result.status == 200) {
     Alert.alert('Error', result.Message);

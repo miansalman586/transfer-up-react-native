@@ -32,6 +32,8 @@ export default function HomeTab({ navigation }) {
   const [balances, setBalances] = useState(null);
   const [transactions, setTransactions] = useState(null);
 
+  const [profileImage, setProfileImage] = useState(null);
+
   const bottomSheetCurrencyModalRef = useRef(null);
 
 
@@ -66,6 +68,15 @@ export default function HomeTab({ navigation }) {
       } else setBalances([]);
     });
  
+    setProfileImage(null);
+    httpRequest('customer/get-profile-image', 'get', null, true, null).then(async image=>{
+      if (image.status == 200) {
+        image = await image.json();
+        setProfileImage('data:image/jpeg;base64,' + image.image); 
+      } else  {
+      setProfileImage({});
+      }
+    });
 
     setTransactions(null);
      httpRequest(
@@ -117,10 +128,10 @@ export default function HomeTab({ navigation }) {
     });
 
      httpRequest(
-      'public/get-transfer-type',
+      'customer/get-transfer-type',
       'get',
       null,
-      false
+      true
     ).then(async transferTypes=>{
       transferTypes = await transferTypes.json();
       global.transferTypes = transferTypes;
@@ -190,14 +201,32 @@ export default function HomeTab({ navigation }) {
               onPress={() => {
                 navigation.navigate('Profile');
               }}>
-            <ContentLoader
-              height={95}
-              width={95}
-              speed={0}
-              backgroundColor={'#333'}
-              foregroundColor={'#999'}>
-              <Circle cx="45" cy="55" r="27.5" />
-            </ContentLoader>
+                {!profileImage &&
+    <ContentLoader
+    height={95}
+    width={95}
+    speed={0}
+    backgroundColor={'#333'}
+    foregroundColor={'#999'}>
+    <Circle cx="45" cy="55" r="27.5" />
+  </ContentLoader>
+                }
+        {profileImage &&
+  <Image
+  style={{
+    width: 50,
+    height: 50,
+    marginLeft: 20,
+    marginTop: 25,
+    marginBottom: 10,
+    borderRadius: 25,
+  }}
+  source={{
+    uri: profileImage,
+  }}
+/>
+        }
+          
             </TouchableOpacity>
           </View>
           <View
