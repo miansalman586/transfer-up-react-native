@@ -225,6 +225,10 @@ export default function BalanceScreen({ route, navigation }) {
                 }}>
                 <View style={{ alignItems: 'center' }}>
                   <Pressable
+                  disabled={!global.transferTypes?.some(
+                    (e) => e.transactionTypeId == 2 && (
+                      e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                  )}
                     onPressIn={handleAddPressIn}
                     onPressOut={handleAddPressOut}
                     onPress={() => {
@@ -237,20 +241,31 @@ export default function BalanceScreen({ route, navigation }) {
                         height: 55,
                         marginRight: 45,
                         borderRadius: 27.5,
-                        backgroundColor: isAddPressed ? 'white' : '#2a80b9',
+                        backgroundColor: 
+                        global.transferTypes?.some(
+                          (e) => e.transactionTypeId == 2 && (
+                            e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                        ) ?
+                        isAddPressed ? 'white' : '#2a80b9' : '#636562',
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}>
                       <FontAwesome5
                         name="plus"
                         size={27.5}
-                        color={isAddPressed ? 'black' : 'white'}
+                        color={  global.transferTypes?.some(
+                          (e) => e.transactionTypeId == 2 && (
+                            e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                        ) ? isAddPressed ? 'black' : 'white' : 'black'}
                       />
                     </View>
                   </Pressable>
                   <Text
                     style={{
-                      color: isAddPressed ? 'white' : '#2a80b9',
+                      color: global.transferTypes?.some(
+                        (e) => e.transactionTypeId == 2 && (
+                          e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                      ) ? isAddPressed ? 'white' : '#2a80b9' : '#636562',
                       fontSize: 16,
                       marginTop: 10,
                       marginRight: 45,
@@ -539,7 +554,8 @@ export default function BalanceScreen({ route, navigation }) {
                 </View>
                 <ScrollView>
                   {global.transferTypes?.filter(
-                      (e) => e.transactionTypeId == 2
+                      (e) => e.transactionTypeId == 2 && (
+                        e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
                     )
                     ?.filter(
                       (x) =>
@@ -589,7 +605,8 @@ export default function BalanceScreen({ route, navigation }) {
                           .includes(sendTransferTypeSearchText.toLowerCase())
                     )
                     ?.filter(
-                      (e) => e.transactionTypeId == 1
+                      (e) => e.transactionTypeId == 1 && (
+                        e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=>t == balanceData?.currencyId)))
                     )
                     ?.map((transferTypeData, index) => (
                       <TransferTypeItem

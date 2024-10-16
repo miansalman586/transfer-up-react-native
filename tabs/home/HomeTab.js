@@ -137,7 +137,7 @@ export default function HomeTab({ navigation }) {
       global.transferTypes = transferTypes;
     });
 
-  
+
 
     SecureStore.getItemAsync('JwtToken').then(token=>{
       const decodedToken = jwtDecode(token);
@@ -501,7 +501,7 @@ export default function HomeTab({ navigation }) {
                             true,
                             setIsLoading
                           );
-                          if (result.success) {
+                          if (result.status == 200) {
                             onFocus();
                           }
                         }}
