@@ -149,6 +149,7 @@ export default function BalanceScreen({ route, navigation }) {
   };
 
   const onFocus = async () => {
+   
     let balanceData = await httpRequest(
       'customer/get-balance-detail?currencyId=' +  currencyId,
       'get',
@@ -228,6 +229,8 @@ export default function BalanceScreen({ route, navigation }) {
                   disabled={!global.transferTypes?.some(
                     (e) => e.transactionTypeId == 2 && (
                       e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                      &&  (e.transferTypeId != 9 || 
+                        (e.transferTypeId == 9 && e.bankAccountCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
                   )}
                     onPressIn={handleAddPressIn}
                     onPressOut={handleAddPressOut}
@@ -245,6 +248,8 @@ export default function BalanceScreen({ route, navigation }) {
                         global.transferTypes?.some(
                           (e) => e.transactionTypeId == 2 && (
                             e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                            &&  (e.transferTypeId != 9 || 
+                              (e.transferTypeId == 9 && e.bankAccountCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
                         ) ?
                         isAddPressed ? 'white' : '#2a80b9' : '#636562',
                         justifyContent: 'center',
@@ -256,6 +261,8 @@ export default function BalanceScreen({ route, navigation }) {
                         color={  global.transferTypes?.some(
                           (e) => e.transactionTypeId == 2 && (
                             e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                            &&  (e.transferTypeId != 9 || 
+                              (e.transferTypeId == 9 && e.bankAccountCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
                         ) ? isAddPressed ? 'black' : 'white' : 'black'}
                       />
                     </View>
@@ -265,6 +272,8 @@ export default function BalanceScreen({ route, navigation }) {
                       color: global.transferTypes?.some(
                         (e) => e.transactionTypeId == 2 && (
                           e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                          &&  (e.transferTypeId != 9 || 
+                            (e.transferTypeId == 9 && e.bankAccountCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
                       ) ? isAddPressed ? 'white' : '#2a80b9' : '#636562',
                       fontSize: 16,
                       marginTop: 10,
@@ -554,8 +563,11 @@ export default function BalanceScreen({ route, navigation }) {
                 </View>
                 <ScrollView>
                   {global.transferTypes?.filter(
-                      (e) => e.transactionTypeId == 2 && (
-                        e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                      (e) => (e.transactionTypeId == 2 && 
+                              (e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                              &&  (e.transferTypeId != 9 || 
+                                      (e.transferTypeId == 9 && e.bankAccountCurrencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                                )
                     )
                     ?.filter(
                       (x) =>
@@ -607,6 +619,7 @@ export default function BalanceScreen({ route, navigation }) {
                     ?.filter(
                       (e) => e.transactionTypeId == 1 && (
                         e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=>t == balanceData?.currencyId)))
+                       
                     )
                     ?.map((transferTypeData, index) => (
                       <TransferTypeItem

@@ -263,6 +263,13 @@ let firstId = null;
                     key={index}
                     navigation={navigation}
                     recipientData={recipientData}
+                    callback={()=>{
+                      navigation.navigate('RecipientDetail', {
+                        recipientId: recipientData.customerRecipientId,
+                        transferTypeId: recipientData.transferTypeId,
+                        tpEmailAddress: recipientData.emailAddress
+                      });
+                    }}
                   />
                 ))}
             </View>

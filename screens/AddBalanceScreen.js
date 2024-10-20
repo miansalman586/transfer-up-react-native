@@ -5,6 +5,7 @@ import {
   TextInput,
   Image,
   ScrollView,
+  Linking,
   Pressable,
   Alert,
 } from 'react-native';
@@ -14,6 +15,7 @@ import ScreenLoader from '../components/ScreenLoader';
 import BottomSheet from '../components/BottomSheet';
 
 import PayPalTransactionTypeItem from '../components/PayPalTransactionTypeItem';
+import * as Clipboard from 'expo-clipboard';
 
 import InputSearch from '../components/InputSearch';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -45,6 +47,16 @@ export default function AddBalanceScreen({ route, navigation }) {
   const [newBalanceData, setNewBalanceData] = useState(null);
 
   const [paypalTransactionType,  setPaypalTransactionType] = useState(null);
+
+  const [isPayPalFeeLinkPressed, setIsPayPalFeeLinkPressed] = useState(false);
+
+  const handlePayPalFeeLinkPressIn = () => {
+    setIsPayPalFeeLinkPressed(true);
+  };
+
+  const handlePayPalFeeLinkPressOut = () => {
+    setIsPayPalFeeLinkPressed(false);
+  };
 
   const handleAmountFocus = () => {
     setIsAmountFocused(true);
@@ -187,6 +199,10 @@ export default function AddBalanceScreen({ route, navigation }) {
                 </View>
               </TouchableOpacity>
             </View>
+            {transferType?.transferTypeId == 2 &&
+
+         
+            <View>
             <Text style={{ color: 'white' , marginTop: 20}}>Transaction type</Text>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => {
                       bottomSheetPayPalTransactionTypeModalRef.current.present();
@@ -222,6 +238,88 @@ export default function AddBalanceScreen({ route, navigation }) {
                 </View>
              
                 </TouchableOpacity>
+<View>
+                {paypalTransactionType?.payPalTransactionTypeId == 2 &&
+  <Pressable
+  onPressIn={handlePayPalFeeLinkPressIn}
+  onPressOut={handlePayPalFeeLinkPressOut}
+  onPress={() => {
+    Linking.openURL(
+      'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+    );
+  }}
+  onLongPress={async () => {
+    await Clipboard.setStringAsync(
+      'https://www.paypal.com/my/webapps/mpp/merchant-fees'
+    );
+    showToast('Copied!');
+  }}>
+   <Text style={{
+       color:'white',
+       marginTop: 20,
+       fontSize: 16,
+       lineHeight:25,
+   }}>
+   PayPal may charge fee please refer to this link 
+   </Text>
+  <Text
+    style={{
+      color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+      textDecorationLine: 'underline',
+      fontSize: 16,
+    }}>
+   PayPal Merchant Fee
+  </Text>
+ </Pressable>
+
+ }
+
+  
+
+</View>
+
+                </View>
+
+
+
+
+                   }
+
+                   
+{transferType.transferTypeId == 9 && (
+               
+               <Pressable
+               onPressIn={handlePayPalFeeLinkPressIn}
+               onPressOut={handlePayPalFeeLinkPressOut}
+               onPress={() => {
+                 Linking.openURL(
+                   'https://wise.com/pricing/'
+                 );
+               }}
+               onLongPress={async () => {
+                 await Clipboard.setStringAsync(
+                   'https://wise.com/pricing/'
+                 );
+                 showToast('Copied!');
+               }}>
+                <Text style={{
+                    color:'white',
+                    fontSize: 16,
+                    marginTop: 20,
+                    lineHeight:25,
+                }}>
+                Bank may charge fee please refer to this link 
+                </Text>
+               <Text
+                 style={{
+                   color: isPayPalFeeLinkPressed ? 'white' : '#2a80b9',
+                   textDecorationLine: 'underline',
+                   fontSize: 16,
+                 }}>
+                Bank pricing
+               </Text>
+              </Pressable>
+                                )}
           </ScrollView>
           <View
             style={{
@@ -252,7 +350,7 @@ export default function AddBalanceScreen({ route, navigation }) {
                   Alert.alert('Error', result.message);
                 }
               }}
-              disabled={!amount || amount <= 0 || !paypalTransactionType}
+              disabled={!amount || amount <= 0 || (transferType?.transferTypeId == 2 && !paypalTransactionType)}
               style={{
                 marginTop: 'auto',
                 marginBottom: 40,
@@ -261,7 +359,7 @@ export default function AddBalanceScreen({ route, navigation }) {
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor:
-                  !amount || amount <= 0 || !paypalTransactionType
+                  !amount || amount <= 0 || (transferType?.transferTypeId == 2 && !paypalTransactionType)
                     ? '#2A2C29'
                     : isContinuePressed
                     ? 'white'

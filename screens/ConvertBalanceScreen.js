@@ -46,7 +46,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
   const [isFromAmountFocused, setIsFromAmountFocused] = useState(false);
   const [isToAmountFocused, setIsToAmountFocused] = useState(false);
 
-  const [fromAmount, setFromAmount] = useState(null);
+  const [fromAmount, setFromAmount] = useState(0.00);
   const [toAmount, setToAmount] = useState(null);
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
@@ -68,18 +68,16 @@ export default function ConvertBalanceScreen({ route, navigation }) {
     setIsFromAmountFocused(true);
   };
 
-  const handleFromAmountBlur = async() => {
+  const handleFromAmountBlur = async(fromCurrency, toCurrency) => {
     setIsFromAmountFocused(false);
 
-    if (fromAmount > 0) {
       setExchangeRate(null);
-    let result = await httpRequest('public/get-currency-exchange-rate?sourceCurrency=' + newBalanceData.currency + '&targetCurrency=' + newToBalanceData.currency + '&amount=' + fromAmount, 'get', null, false, null);
+    let result = await httpRequest('public/get-currency-exchange-rate?sourceCurrency=' + (fromCurrency?.currency ?? newBalanceData?.currency ?? balanceData?.currency) + '&targetCurrency=' + (toCurrency?.currency ?? newToBalanceData?.currency ?? toBalanceData?.currency) + '&amount=' + fromAmount, 'get', null, false, null);
     if (result.status == 200) {
       result = await result.json();
       setToAmount((parseFloat(fromAmount) * parseFloat(result[0].rate)).toFixed(2));
-      setExchangeRate(parseFloat(result[0].rate).toFixed(2));
-    }
-  }
+      setExchangeRate(parseFloat(result[0].rate));
+    } 
   };
 
   const handleToAmountFocus = () => {
@@ -93,6 +91,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
   const onFocus = () => {
     setNewBalanceData(balanceData);
     setNewToBalanceData(toBalanceData);
+    handleFromAmountBlur();
   };
 
   useEffect(() => {
@@ -192,7 +191,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}
-                      source={{}}
+                      source={{uri:'data:image/jpeg;base64,' + newBalanceData?.currencyFlag}}
                     />
                     <Text
                       style={{
@@ -339,7 +338,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}
-                      source={{}}
+                      source={{uri:'data:image/jpeg;base64,' + newToBalanceData?.currencyFlag}}
                     />
                     <Text
                       style={{
@@ -462,6 +461,10 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                               (e) => e.currencyId == currencyData.currencyId
                             )
                           );
+
+                          handleFromAmountBlur(global.balances.find(
+                            (e) => e.currencyId == currencyData.currencyId
+                          ), toBalanceData);
                         }}
                       />
                     ))}
@@ -509,6 +512,10 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                               (e) => e.currencyId == currencyData.currencyId
                             )
                           );
+
+                          handleFromAmountBlur(newBalanceData, global.balances.find(
+                            (e) => e.currencyId == currencyData.currencyId
+                          ));
                         }}
                       />
                     ))}

@@ -44,11 +44,18 @@ export default function SendMoneyScreen({ route, navigation }) {
   const bottomSheetBalanceDataModalRef = useRef(null);
   const bottomSheetRecipientModalRef = useRef(null);
 
+  const [isDisableContinue, setIsDisableContinue] = useState(false);
+
+  const [bankFee, setBankFee] = useState('0.00');
+
   const [balanceDataSearchText, setBalanceDataSearchText] = useState(null);
   const [recipientSearchText, setRecipientSearchText] = useState(null);
 
 
   const [isNoAmountError, setIsNoAmountError] = useState(false);
+  const [isMinAmountError, setIsMinAmountError] = useState(false);
+  const [isMinAmountErrorMsg, setIsMinAmountErrorMsg] = useState(null);
+
   const [isAmountFocused, setIsAmountFocused] = useState(false);
 
   const [transactionFee, setTransactionFee] = useState(null);
@@ -112,6 +119,8 @@ export default function SendMoneyScreen({ route, navigation }) {
 
   const handleAmountBlur = () => {
     setIsAmountFocused(false);
+
+    getWiseQuote(newBalanceData);
   };
 
   const [isSendPressed, setIsSendPressed] = useState(false);
@@ -125,8 +134,9 @@ export default function SendMoneyScreen({ route, navigation }) {
   };
 
   const onFocus = async () => {
-    setNewBalanceData(balanceData);
+    setNewBalanceData(balanceData ?? global.balances[0]);
     setEmailAddress(route.params.emailAddress);
+    getWiseQuote(balanceData ?? global.balances[0]);
 
     if (!route.params.recipient) {
       setRecipient({flag: true});
@@ -148,6 +158,36 @@ export default function SendMoneyScreen({ route, navigation }) {
    }
   }
   };
+
+  const getWiseQuote =  async (balanceData) => {
+    if (amount > 0 && transferType?.transferTypeId == 9) {
+    setBankFee(null);
+    setIsDisableContinue(true);
+    let result = await httpRequest('customer/get-wise-quote?currencyId=' + balanceData?.currencyId + '&amount=' + amount, 'get', null, true, null);
+    if (result.status == 200) {
+      result = await result.json();
+      let payment = result.paymentOptions.filter(e=>e.payIn == 'BALANCE')[0];
+      if (payment) {
+        if (payment.disabled) {
+          setBankFee('0.00');
+          setIsMinAmountError(true);
+          setIsMinAmountErrorMsg(payment.disabledReason.message);
+        } else {
+          setBankFee(payment.fee.total);
+          setIsMinAmountError(false);
+        } 
+      } else {
+
+        setBankFee('0.00');
+        setIsMinAmountError(false);
+      }
+    } else if (result.status == 204) {
+      setBankFee('0.00');
+      setIsMinAmountError(false);
+    }
+    setIsDisableContinue(false);
+  }
+}
 
   useEffect(() => {
 navigation.addListener('focus', onFocus);
@@ -188,7 +228,7 @@ navigation.addListener('focus', onFocus);
                   borderWidth: 2,
                   marginTop: 10,
                   borderColor: 
-                  (isNoAmountError && amount) 
+                  ((isNoAmountError || isMinAmountError) && amount) 
                   ? '#FFBDBB'
                   :
                   isAmountFocused ? '#2a80b9' : '#2A2C29',
@@ -272,6 +312,12 @@ navigation.addListener('focus', onFocus);
                 ' in your balance.'
               }
             />
+                <ErrorMessage
+              flag={isMinAmountError && amount}
+              message={
+                isMinAmountErrorMsg
+              }
+            />
 {transferType.transferTypeId != 4 &&
 <View>
 
@@ -280,7 +326,7 @@ navigation.addListener('focus', onFocus);
                 <View style={{ marginTop: 20 }}>
                   <ContentLoader
                     height={20}
-                    speed={1}
+                    speed={0}
                     backgroundColor={'#333'}
                     foregroundColor={'#999'}
                     viewBox={width + ' 20'}>
@@ -434,6 +480,56 @@ navigation.addListener('focus', onFocus);
               </View>
             }
 
+{!bankFee && (
+                <View style={{ marginTop: 20 }}>
+                  <ContentLoader
+                    height={20}
+                    speed={0}
+                    backgroundColor={'#333'}
+                    foregroundColor={'#999'}
+                    viewBox={width + ' 20'}>
+                    <Rect width={width} height="20" />
+                  </ContentLoader>
+                </View>
+              )}
+
+            {bankFee && transferType?.transferTypeId == 9 &&
+                <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <View
+                    style={{
+                      width: 16,
+                      height: 16,
+                      marginTop: 2,
+                      borderRadius: 8,
+                      padding: 2,
+                      marginRight: 10,
+                      marginLeft: 2,
+                      backgroundColor: 'white',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Entypo name="minus" size={12} color="black" />
+                  </View>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                    }}>
+                    {((bankFee)) }{' '}
+                    {newBalanceData?.currency}
+                  </Text>
+                </View>
+                <Text style={{ color: 'white' }}>Bank Fee</Text>
+              </View>
+            }
+
             {transferType?.transferTypeId == 9 &&
             <View>
                   <Text style={{ color: 'white' , marginTop: 20}}>Recipient</Text>
@@ -570,8 +666,8 @@ navigation.addListener('focus', onFocus);
                   }
               }
               }}
-              disabled={
-                isNoAmountError || !amount || 
+              disabled={ isDisableContinue ||
+                isNoAmountError || !amount ||  isMinAmountError ||
                 (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
                 ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
               }
@@ -582,8 +678,8 @@ navigation.addListener('focus', onFocus);
                 borderRadius: 50,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor:
-                isNoAmountError  || !amount ||
+                backgroundColor:   isDisableContinue ||
+                isNoAmountError  || !amount || isMinAmountError ||
                 (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
                 ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
                   ? '#2A2C29'
@@ -642,6 +738,12 @@ navigation.addListener('focus', onFocus);
                               (e) => e.currencyId == currencyData.currencyId
                             )
                           );
+
+                          getWiseQuote(global.balances.find(
+                            (e) => e.currencyId == currencyData.currencyId
+                          ));
+
+                          setRecipient({flag: true});
                         }}
                       />
                     ))}
@@ -672,15 +774,17 @@ navigation.addListener('focus', onFocus);
                         (x.firstName + ' ' + x.lastName)
                           .toLowerCase()
                           .includes(recipientSearchText.toLowerCase())
-                    )
+                    )?.filter(e=>e.currencyId == newBalanceData?.currencyId)
                     ?.map((recipientData, index) => (
                       <RecipientItem
                         key={index}
                         recipientId={recipient}
+                        backgroundColor={"#2A2C29"}
+                        customerRecipientId={recipient.customerRecipientId}
                         isRadioButton={true}
                         recipientData={recipientData}
                         callback={async () => {
-                          recipientSearchText.current.close();
+                          bottomSheetRecipientModalRef.current.close();
 
                           setRecipient(recipientData);
                         }}

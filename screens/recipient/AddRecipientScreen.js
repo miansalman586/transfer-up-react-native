@@ -28,6 +28,10 @@ const bottomSheetTransferTypeModalRef = useRef(null);
   const [currencySearchText, setCurrencySearchText] = useState(null);
   const [transferTypeSearchText, setTransferTypeSearchText] = useState(null);
 
+  const bottomSheetAccountTypeModalRef = useRef(null);
+
+  const [accountType, setAccountType] = useState(null);
+
   const [isEmailAddressFocused, setEmailAddressFocused] = useState(false);
   const [emailAddress, setEmailAddress] = useState(null);
   
@@ -232,6 +236,46 @@ const handleIBANBlur = async () => {
              
                 </TouchableOpacity>
 
+                
+<Text style={{ color: 'white' , marginTop: 20}}>Currency</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                      bottomSheetCurrencyModalRef.current.present();
+                      setCurrencySearchText(null);
+                }}>
+                <View
+                style={{
+                  height: 52,
+                  paddingLeft: 5,
+                  color: 'white',
+                  paddingRight: 20,
+                  backgroundColor: '#2A2C29',
+                  marginTop: 10,
+                  fontSize: 18,
+                  flexDirection: 'row'
+                  , justifyContent: 'space-between'
+                }}>
+                  <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginLeft: 20,
+                        marginTop: 15
+                  }}>
+      {currency?.description}
+
+                  </Text>
+   <FontAwesome5
+                      style={{ marginTop: 15, marginLeft: 10 }}
+                      name="chevron-down"
+                      size={18}
+                      color="white"
+                    />
+
+                </View>
+             
+                </TouchableOpacity>
+
+
+
 {transferType?.transferTypeId == 2 &&
 <View>
 
@@ -272,43 +316,6 @@ const handleIBANBlur = async () => {
            
             </View>
 }
-<Text style={{ color: 'white' , marginTop: 20}}>Currency</Text>
-                <TouchableOpacity activeOpacity={0.5} onPress={() => {
-                      bottomSheetCurrencyModalRef.current.present();
-                      setCurrencySearchText(null);
-                }}>
-                <View
-                style={{
-                  height: 52,
-                  paddingLeft: 5,
-                  color: 'white',
-                  paddingRight: 20,
-                  backgroundColor: '#2A2C29',
-                  marginTop: 10,
-                  fontSize: 18,
-                  flexDirection: 'row'
-                  , justifyContent: 'space-between'
-                }}>
-                  <Text style={{
-                        color: 'white',
-                        fontSize: 18,
-                        marginLeft: 20,
-                        marginTop: 15
-                  }}>
-      {currency?.description}
-
-                  </Text>
-   <FontAwesome5
-                      style={{ marginTop: 15, marginLeft: 10 }}
-                      name="chevron-down"
-                      size={18}
-                      color="white"
-                    />
-
-                </View>
-             
-                </TouchableOpacity>
-
 
 
 
@@ -352,11 +359,11 @@ const handleIBANBlur = async () => {
 }
 
 
-{currency?.currencyId == 2 && transferType?.transferTypeId == 9 &&
+{(currency?.currencyId == 2 || currency?.currencyId == 1) && transferType?.transferTypeId == 9 &&
 <View>
 
            
-<Text style={{ color: 'white',marginTop:20 }}>BIC/SWIFT</Text>
+<Text style={{ color: 'white',marginTop:20 }}> {currency?.currencyId == 1 ? 'Routing Number' : 'BIC/SWIFT'}</Text>
                 <TextInput
                   style={{
                     inputMode: 'email',
@@ -421,6 +428,50 @@ const handleIBANBlur = async () => {
                   onBlur={handleAccountNumberBlur}
                   selectionColor="#2a80b9"
                 />
+
+                {currency?.currencyId == 1 &&
+                <View>
+
+
+<Text style={{ color: 'white' , marginTop: 20}}>Account Type</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                      bottomSheetAccountTypeModalRef.current.present();
+                }}>
+                <View
+                style={{
+                  height: 52,
+                  paddingLeft: 5,
+                  color: 'white',
+                  paddingRight: 20,
+                  backgroundColor: '#2A2C29',
+                  marginTop: 10,
+                  fontSize: 18,
+                  flexDirection: 'row'
+                  , justifyContent: 'space-between'
+                }}>
+                  <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginLeft: 20,
+                        marginTop: 15
+                  }}>
+      {accountType}
+
+                  </Text>
+   <FontAwesome5
+                      style={{ marginTop: 15, marginLeft: 10 }}
+                      name="chevron-down"
+                      size={18}
+                      color="white"
+                    />
+
+                </View>
+             
+                </TouchableOpacity>
+
+                </View>
+
+                }
            
             </View>
 }
@@ -541,6 +592,19 @@ const handleIBANBlur = async () => {
               </View>
             }
           />
+             <BottomSheet
+            bottomSheetModalRef={bottomSheetAccountTypeModalRef}
+            snapPoints={['25%']}
+            title={'Select account type'}
+            content={
+              <View>
+                <ScrollView>
+              
+                </ScrollView>
+
+              </View>
+            }
+          />
               <BottomSheet
             bottomSheetModalRef={bottomSheetTransferTypeModalRef}
             snapPoints={['90%']}
@@ -563,6 +627,8 @@ const handleIBANBlur = async () => {
                         x.transferTypeName
                           .toLowerCase()
                           .includes(transferTypeSearchText.toLowerCase())
+                    )?.filter((value, index, self) => 
+                      index === self.findIndex((t) => t.transferTypeId === value.transferTypeId)
                     )
                     ?.filter(
                       (e) => e.transferTypeId != 3 && e.transferTypeId != 4

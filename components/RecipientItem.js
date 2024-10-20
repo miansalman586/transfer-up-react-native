@@ -2,8 +2,9 @@ import { View, Text, Image, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useState } from 'react';
+import RadioButton from './RadionButton';
 
-export default function RecipientItem({ navigation, recipientData }) {
+export default function RecipientItem({ navigation, recipientData, backgroundColor, isRadioButton, customerRecipientId, callback }) {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePressIn = () => {
@@ -19,18 +20,15 @@ export default function RecipientItem({ navigation, recipientData }) {
       onPressIn={handlePressIn}
       onPressOut={handleRelease}
       onPress={() => {
-        navigation.navigate('RecipientDetail', {
-          recipientId: recipientData.customerRecipientId,
-          transferTypeId: recipientData.transferTypeId,
-          tpEmailAddress: recipientData.emailAddress
-        });
+     callback();
+      
       }}
       style={{
         paddingLeft: 20,
         paddingTop: 15,
         paddingBottom: 20,
         paddingRight: 20,
-        backgroundColor: isPressed ? '#2A2C29' : '#13150F',
+        backgroundColor: backgroundColor ? backgroundColor : isPressed ? '#2A2C29' : '#13150F',
       }}>
       <View style={{ flexDirection: 'row' }}>
         <View
@@ -86,8 +84,14 @@ export default function RecipientItem({ navigation, recipientData }) {
             <Text style={{ color: 'white', fontSize: 14, marginTop: 10 }}>
             <Text>{recipientData.transferType} - {recipientData.emailAddress ? recipientData.emailAddress : recipientData.accountNumber ? recipientData.accountNumber : recipientData.iban}</Text>
             </Text>
+            {isRadioButton &&
+            <View style={{ marginTop: 7 }}>
+            <RadioButton selected={recipientData.customerRecipientId == customerRecipientId} />
+          </View>
+        }
           </View>
         </View>
+    
       </View>
     </Pressable>
   );

@@ -472,7 +472,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                 )}
 
 
-                {transactionData?.transactionStatusId != 4 && transactionData?.transactionStatusId != 5 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2)) && (
+                {transactionData?.transferTypeId != 4 && transactionData?.transactionStatusId != 4 && transactionData?.transactionStatusId != 5 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2) || (transactionData?.transactionTypeId == 2 && transactionData?.transferTypeId == 9)) && (
                   <View>
                     <View
                       style={{
@@ -489,7 +489,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                       }}>
                       Fee Details
                     </Text>
-                    {(transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2)) &&
+                    {(transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2) || (transactionData?.transactionTypeId == 2 && transactionData?.transferTypeId == 9)) &&
   <View
                       style={{
                         flexDirection: 'row',
@@ -567,7 +567,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
 </Pressable>
                   }
 
-{((transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 9)) &&
+{((transactionData?.transferTypeId == 9)) &&
                
  <Pressable
  onPressIn={handlePayPalFeeLinkPressIn}
@@ -640,7 +640,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                   </View>
                 )}
 
-{transactionData?.transferTypeId == 9
+{transactionData?.transferTypeId == 9 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.transactionStatusId != 4))
                   && (
                     <View>
                       <View
@@ -659,7 +659,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                         Bank Details
                       </Text>
                    
-                      {transactionData?.name  && (
+                      {transactionData?.name && transactionData?.transactionTypeId == 1  && (
                           <View
                             style={{
                               flexDirection: 'row',
@@ -684,6 +684,31 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           </View>
                         )}
 
+{transactionData?.accountHolderName && transactionData?.transactionTypeId == 2  && (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              Full Name
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             {transactionData?.accountHolderName}
+                            </Text>
+                          </View>
+                        )}
+
                         { transactionData?.bicswift  &&
                           <View
                             style={{
@@ -696,7 +721,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
                                 fontSize: 16,
                                 marginTop: 20,
                               }}>
-                             BIC/SWIFT
+                                {transactionData?.currencyId == 1 ? 'Routing Number' : 'BIC/SWIFT'}
+                             
                             </Text>
                             <Text
                               style={{
@@ -734,6 +760,31 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           </View>
 }
 
+{ transactionData?.accountType  &&
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             Account Type
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              {transactionData.accountType}
+                            </Text>
+                          </View>
+}
+
 { transactionData?.iban  &&
                           <View
                             style={{
@@ -759,6 +810,17 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           </View>
 }
 
+{transactionData?.transactionStatusId == 1 && transactionData?.transferTypeId == 9 && transactionData?.transactionTypeId == 2 &&
+  <Text
+  style={{
+    color:'white',
+    fontSize: 16,
+    marginTop: 20,
+    lineHeight:25,
+  }}>
+  Please send exactly <Text style={{fontWeight: 'bold'}}>{transactionData?.totalAmount} {transactionData?.currency}</Text> to our bank account <Text style={{fontWeight: 'bold'}}>{transactionData?.payPalAccountEmailAddress}</Text> and include the transaction number <Text style={{fontWeight: 'bold'}}>T{transactionData?.transactionId}</Text> in the reference while you are sending money otherwise, we won't be able to track your payment.
+</Text>
+                        }
 
                    
                     </View>
