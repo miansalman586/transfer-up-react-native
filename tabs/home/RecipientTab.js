@@ -109,8 +109,8 @@ let firstId = null;
       };
   
     useEffect(() => {
-      navigation.addListener('focus', onFucus);
-
+     // navigation.addListener('focus', onFucus);
+     onFucus();
       (async () => {
         let setting =  await getSetting();
   

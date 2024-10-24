@@ -128,10 +128,10 @@ export default function HomeTab({ navigation }) {
     });
 
      httpRequest(
-      'customer/get-transfer-type',
+      'public/get-transfer-type',
       'get',
       null,
-      true
+      false
     ).then(async transferTypes=>{
       transferTypes = await transferTypes.json();
       global.transferTypes = transferTypes;

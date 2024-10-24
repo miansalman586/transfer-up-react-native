@@ -472,7 +472,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
                 )}
 
 
-                {transactionData?.transferTypeId != 4 && transactionData?.transactionStatusId != 4 && transactionData?.transactionStatusId != 5 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2) || (transactionData?.transactionTypeId == 2 && transactionData?.transferTypeId == 9)) && (
+                {transactionData?.transferTypeId != 3 && transactionData?.transferTypeId != 4 && transactionData?.transactionStatusId != 4 && transactionData?.transactionStatusId != 5 && (transactionData?.transactionTypeId == 1 || (transactionData?.transactionTypeId == 2 && transactionData?.paypalTransactionTypeId == 2) || (transactionData?.transactionTypeId == 2 && transactionData?.transferTypeId == 9)) && (
                   <View>
                     <View
                       style={{

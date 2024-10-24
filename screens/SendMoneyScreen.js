@@ -721,6 +721,9 @@ navigation.addListener('focus', onFocus);
                           .toLowerCase()
                           .includes(balanceDataSearchText.toLowerCase())
                     )
+                    ?.filter(e=> (transferType?.transferTypeId != 2 && transferType?.transferTypeId != 9)|| 
+                      ((transferType?.transferTypeId == 2 || transferType?.transferTypeId == 9) && global.transferTypes?.some(t=> (t.transferTypeId == transferType?.transferTypeId) && t.currencyId?.split(',').some(x=>x == e.currencyId))) 
+                      )
                     ?.filter((e) =>
                       global.balances?.some((t) => t.currencyId == e.currencyId)
                     )
@@ -742,8 +745,6 @@ navigation.addListener('focus', onFocus);
                           getWiseQuote(global.balances.find(
                             (e) => e.currencyId == currencyData.currencyId
                           ));
-
-                          setRecipient({flag: true});
                         }}
                       />
                     ))}

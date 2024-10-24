@@ -1,5 +1,7 @@
 import { View, Text, Image, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 import { useState } from 'react';
 import RadioButton from './RadionButton';
@@ -43,15 +45,21 @@ export default function RecipientItem({ navigation, recipientData, backgroundCol
           }}>
           <Icon
             name={
-              recipientData.transferTypeId == 1
-                ? 'bank'
-                : recipientData.transferTypeId == 2
+               recipientData.transferTypeId == 2
                 ? 'paypal'
                 : ''
             }
             size={27.5}
             color="white"
           />
+           {recipientData.transferTypeId == 9 && (
+            <FontAwesome
+              name={'bank'}
+              size={23.5}
+              style={{marginTop: -18}}
+              color={'white'}
+            />
+          )}
         </View>
         <View style={{ marginTop: 3, flex: 1 }}>
           <View

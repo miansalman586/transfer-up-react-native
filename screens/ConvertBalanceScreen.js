@@ -231,7 +231,7 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                 <View style={{ marginTop: 20 }}>
                   <ContentLoader
                     height={20}
-                    speed={1}
+                    speed={0}
                     backgroundColor={'#333'}
                     foregroundColor={'#999'}
                     viewBox={width + ' 20'}>
@@ -388,8 +388,6 @@ export default function ConvertBalanceScreen({ route, navigation }) {
                 );
                 if (result.status == 200) {
                   navigation.navigate('HomeTab');
-                } else {
-                  Alert.alert('Error', result.Message);
                 }
               }}  
               disabled={  !fromAmount || !toAmount ||
