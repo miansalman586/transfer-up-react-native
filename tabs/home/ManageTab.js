@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert
 } from 'react-native';
 import ScreenLoader from '../../components/ScreenLoader';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -199,13 +200,12 @@ export default function ManageTab({ route, navigation }) {
                Your customer account
               </Text>
             </View>
-            <View style={{ marginLeft: 20, marginTop: 40 }}>
+ {/*            <View style={{ marginLeft: 20, marginTop: 40 }}>
               <Text style={{ color: 'white' }}>Other account</Text>
             </View>
             <View
               style={{
                 marginTop: 10,
-                marginBottom: 10,
                 borderWidth: 1,
                 marginLeft: 20,
                 marginRight: 20,
@@ -215,8 +215,8 @@ export default function ManageTab({ route, navigation }) {
               <View style={{ flex: 'row' }}>
                 <ItemLoader count={1} />
               </View>
-          
-            <View style={{ marginLeft: 20, marginTop: 40 }}>
+           */}
+            <View style={{ marginLeft: 20, marginTop: 50 }}>
               <Text style={{ color: 'white' }}>General</Text>
             </View>
             <View
@@ -394,7 +394,26 @@ export default function ManageTab({ route, navigation }) {
                 backgroundColor: isLogoutPressed ? '#2A2C29' : '#13150F',
               }}
               onPress={async () => {
-                await SecureStore.deleteItemAsync('JwtToken');
+
+                Alert.alert(
+                  'Confirmation',
+                  'Are you sure you want to logout?',
+                  [
+                    {
+                      text: 'Close',
+                      style: 'destructive',
+                      onPress: async () => {
+                     
+                        await SecureStore.deleteItemAsync('JwtToken');
+
+                      },
+                    },
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                  ]
+                );
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View

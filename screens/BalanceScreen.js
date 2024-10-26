@@ -619,8 +619,12 @@ export default function BalanceScreen({ route, navigation }) {
                     ?.filter(
                       (e) => e.transactionTypeId == 1 
                       && ((( (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=>t == balanceData?.currencyId))) && (e.transferTypeId != 2 || (e.transferTypeId == 2 && e.currencyId?.split(',').some(t=>t == balanceData?.currencyId))))
-                        || (  (e.transferTypeId == 9 && e.currencyId?.split(',').some(t=>t == balanceData?.currencyId))) || e.transferTypeId == 4)
-                       
+                        || (  (e.transferTypeId == 9 && e.currencyId?.split(',').some(t=>t == balanceData?.currencyId))) 
+                        || (  (e.transferTypeId == 5 && e.currencyId?.split(',').some(t=>t == balanceData?.currencyId))) 
+                        || (  (e.transferTypeId == 10 && e.currencyId?.split(',').some(t=>t == balanceData?.currencyId))) 
+                        || e.transferTypeId == 4
+                      
+                      )
                     )
                     ?.map((transferTypeData, index) => (
                       <TransferTypeItem

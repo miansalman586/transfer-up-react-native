@@ -150,7 +150,7 @@ export default function SendMoneyScreen({ route, navigation }) {
     setTransactionFee(result.find(e=>e.transactionFeeId == 2).fee)
    }
 
-   if (transferType.transferTypeId == 9) {
+   if (transferType.transferTypeId == 9 || transferType.transferTypeId == 5  || transferType.transferTypeId == 10) {
    let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + transferType.transferTypeId, 'get', null, true, null);
    if (recip.status == 200) {
     recip = await recip.json();
@@ -160,7 +160,7 @@ export default function SendMoneyScreen({ route, navigation }) {
   };
 
   const getWiseQuote =  async (balanceData) => {
-    if (amount > 0 && transferType?.transferTypeId == 9) {
+    if (amount > 0 && (transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5)) {
     setBankFee(null);
     setIsDisableContinue(true);
     let result = await httpRequest('customer/get-wise-quote?currencyId=' + balanceData?.currencyId + '&amount=' + amount, 'get', null, true, null);
@@ -173,7 +173,7 @@ export default function SendMoneyScreen({ route, navigation }) {
           setIsMinAmountError(true);
           setIsMinAmountErrorMsg(payment.disabledReason.message);
         } else {
-          setBankFee(payment.fee.total);
+          setBankFee(payment.fee.total.toString());
           setIsMinAmountError(false);
         } 
       } else {
@@ -443,7 +443,7 @@ navigation.addListener('focus', onFocus);
             }
 
             
-{((transferType?.transferTypeId == 9)) &&
+{((transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5)) &&
                
                <Pressable
                onPressIn={handlePayPalFeeLinkPressIn}
@@ -465,7 +465,7 @@ navigation.addListener('focus', onFocus);
                     marginTop: 10,
                     lineHeight:25,
                 }}>
-                Bank may charge fee please refer to this link 
+                {transferType?.transferTypeId == 9 ? 'Bank' : transferType?.transferTypeId == 5 ? 'Ali Pay' : ''} may charge fee please refer to this link 
                 </Text>
                <Text
                  style={{
@@ -473,7 +473,7 @@ navigation.addListener('focus', onFocus);
                    textDecorationLine: 'underline',
                    fontSize: 16,
                  }}>
-                Bank pricing
+                {transferType?.transferTypeId == 9 ? 'Bank' : transferType?.transferTypeId == 5 ? 'Ali Pay' : ''} pricing
                </Text>
               </Pressable>
                                 }
@@ -493,7 +493,7 @@ navigation.addListener('focus', onFocus);
                 </View>
               )}
 
-            {bankFee && transferType?.transferTypeId == 9 &&
+            {bankFee && (transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5) &&
                 <View
                 style={{
                   marginTop: 20,
@@ -526,11 +526,11 @@ navigation.addListener('focus', onFocus);
                     {newBalanceData?.currency}
                   </Text>
                 </View>
-                <Text style={{ color: 'white' }}>Bank Fee</Text>
+                <Text style={{ color: 'white' }}>{transferType?.transferTypeId == 9 ? 'Bank' : transferType?.transferTypeId == 5 ? 'Ali Pay' : ''} Fee</Text>
               </View>
             }
 
-            {transferType?.transferTypeId == 9 &&
+            {(transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 | transferType?.transferTypeId == 10) &&
             <View>
                   <Text style={{ color: 'white' , marginTop: 20}}>Recipient</Text>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => {
@@ -650,12 +650,12 @@ navigation.addListener('focus', onFocus);
                     currencyId: newBalanceData.currencyId,
                     transactionTypeId: 1,
                     amount: amount,
-                    emailAddress: emailAddress,
+                    emailAddress: newBalanceData?.currencyId == 1006 ? recipient?.emailAddress : emailAddress,
                     recipientId: recipient?.recipientId,
                     firstName: recipient?.firstName,
                     lastName: recipient?.lastName,
                     bicswift: recipient?.bicswift,
-                    accountNumber: recipient?.accountNumber,
+                    accountNumber: newBalanceData?.currencyId == 1006 ? null : recipient?.accountNumber,
                     iban: recipient?.iban
                   }, true, setIsLoading);
 
@@ -669,7 +669,7 @@ navigation.addListener('focus', onFocus);
               disabled={ isDisableContinue ||
                 isNoAmountError || !amount ||  isMinAmountError ||
                 (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
-                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
+                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5) && recipient?.flag)
               }
               style={{
                 marginTop: 'auto',
@@ -681,7 +681,7 @@ navigation.addListener('focus', onFocus);
                 backgroundColor:   isDisableContinue ||
                 isNoAmountError  || !amount || isMinAmountError ||
                 (!emailAddress && (transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4)) || 
-                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9) && recipient?.flag)
+                ((transferType.transferTypeId == 4 || transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5) && recipient?.flag)
                   ? '#2A2C29'
                   : isSendPressed
                   ? 'white'
@@ -721,8 +721,8 @@ navigation.addListener('focus', onFocus);
                           .toLowerCase()
                           .includes(balanceDataSearchText.toLowerCase())
                     )
-                    ?.filter(e=> (transferType?.transferTypeId != 2 && transferType?.transferTypeId != 9)|| 
-                      ((transferType?.transferTypeId == 2 || transferType?.transferTypeId == 9) && global.transferTypes?.some(t=> (t.transferTypeId == transferType?.transferTypeId) && t.currencyId?.split(',').some(x=>x == e.currencyId))) 
+                    ?.filter(e=> (transferType?.transferTypeId != 2 && transferType?.transferTypeId != 9 && transferType?.transferTypeId != 5 && transferType?.transferTypeId != 10)|| 
+                      ((transferType?.transferTypeId == 2 || transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 || transferType?.transferTypeId == 10) && global.transferTypes?.some(t=> (t.transferTypeId == transferType?.transferTypeId) && t.currencyId?.split(',').some(x=>x == e.currencyId))) 
                       )
                     ?.filter((e) =>
                       global.balances?.some((t) => t.currencyId == e.currencyId)
@@ -752,7 +752,7 @@ navigation.addListener('focus', onFocus);
               </View>
             }
           />
-{transferType.transferTypeId == 9 &&
+{(transferType.transferTypeId == 9 || transferType?.transferTypeId == 5 || transferType?.transferTypeId == 10) &&
 <BottomSheet
             bottomSheetModalRef={bottomSheetRecipientModalRef}
             snapPoints={['90%']}

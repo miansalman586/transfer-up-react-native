@@ -16,6 +16,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 
 import TransferTypeItem from '../../components/TransferTypeItem';
 import RadioButton from '../../components/RadionButton';
+import TransferTypeIcon from '../../components/TransferTypeIcon';
 
 export default function AddRecipientScreen({ route, navigation })  {
 
@@ -285,22 +286,9 @@ const handleIBANBlur = async () => {
                   , justifyContent: 'space-between'
                 }}>
                   <View style={{flexDirection: 'row'}}>
-                     {transferType?.transferTypeId == 2 && (
-            <FontAwesome
-              name={ 'paypal'}
-              size={20}
-              color={'white'}
-              style={{marginTop: 15, marginLeft: 20}}
-            />
-          )}
-             {transferType?.transferTypeId == 9 && (
-            <FontAwesome
-              name={'bank'}
-              size={20}
-              color={'white'}
-              style={{marginTop: 15, marginLeft: 20}}
-            />
-          )}
+                    <View style={{marginTop: 13, marginLeft: 20}}>
+                  <TransferTypeIcon transferType={transferType} />
+                  </View>
                   <Text style={{
                         color: 'white',
                         fontSize: 18,
@@ -357,7 +345,7 @@ const handleIBANBlur = async () => {
                         height: 28,
                         borderRadius: 14,
                         marginRight: 10,
-                        marginTop: 9,
+                        marginTop: 12,
                         marginLeft: 15,
                         backgroundColor: '#2A2C29',
                         justifyContent: 'center',
@@ -370,10 +358,12 @@ const handleIBANBlur = async () => {
                         fontWeight: 'bold',
                         color: 'white',
                         fontSize: 22,
-                        marginTop: 9,
+                        marginTop: 12,
                       }}>
                       {currency?.currencyName}
                     </Text>
+
+                    
                    
    <FontAwesome5
                       style={{ marginTop: 15, marginLeft: 10 }}
@@ -389,7 +379,7 @@ const handleIBANBlur = async () => {
 
 
 
-{transferType?.transferTypeId == 2 &&
+{((transferType?.transferTypeId == 2 || transferType?.transferTypeId == 5) )&&
 <View>
 
 
@@ -483,10 +473,13 @@ const handleIBANBlur = async () => {
 
 
 
-{(currency?.currencyId == 2 || currency?.currencyId == 1) && transferType?.transferTypeId == 9 &&
+{((currency?.currencyId == 2 || currency?.currencyId == 1 || currency?.currencyId == 6) && (transferType?.transferTypeId == 9  || transferType?.transferTypeId == 10)) &&
 <View>
 
-           
+{transferType?.transferTypeId != 10 &&
+  <View>
+
+  
 <Text style={{ color: 'white',marginTop:20 }}> {currency?.currencyId == 1 ? 'Routing Number' : 'BIC/SWIFT'}</Text>
                 <TextInput
                   style={{
@@ -526,6 +519,9 @@ const handleIBANBlur = async () => {
                bicErrorMessage
               }
             />
+  </View>  
+}
+     
 
                   
 <Text style={{ color: 'white',marginTop:20 }}>Account Number</Text>
@@ -735,12 +731,11 @@ const handleIBANBlur = async () => {
                           type: currency?.type,
                           currency: currency?.currencyName,
                           details: {
-                            accountNumber: accountNumber,
+                            accountNumber: currency?.currencyId == 1006 ? emailAddress : accountNumber,
                             bic: currency?.currencyId == 2 ? bic : null,
                             iban: iban,
                             abartn: currency?.currencyId == 1 ? bic : null,
-                            accountType: accountType,
-                            accountType: accountType
+                            accountType: currency?.currencyId == 1 ? accountType : null,
                           },
                           accountHolderName: firstName + ' ' + lastName,
                           name: {

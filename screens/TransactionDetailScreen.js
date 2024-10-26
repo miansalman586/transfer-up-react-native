@@ -255,12 +255,12 @@ export default function TransactionDetailScreen({ route, navigation }) {
                   paddingLeft: 20,
                   paddingRight: 20,
                   height: '100%',
-                  backgroundColor: '#13150F',
+              //    backgroundColor: '#13150F',
                 }}>
                 <Text
                   style={{
                     color: 'white',
-                    marginTop: 30,
+                    marginTop: 15,
                     fontSize: 22,
                     fontWeight: 'bold',
                   }}>
@@ -567,7 +567,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
 </Pressable>
                   }
 
-{((transactionData?.transferTypeId == 9)) &&
+{((transactionData?.transferTypeId == 9 || transactionData?.transferTypeId == 5)) &&
                
  <Pressable
  onPressIn={handlePayPalFeeLinkPressIn}
@@ -827,8 +827,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
                   )}
 
 
-                {(((transactionData?.transactionStatusId == 4 || transactionData?.transactionStatusId == 5) && transactionData?.transactionTypeId == 1 && transactionData?.transferTypeId == 2) || 
-                (transactionData?.transactionStatusId != 4 && (transactionData?.transactionTypeId == 1 || transactionData?.transactionTypeId == 2) && transactionData?.transferTypeId == 2 && !transactionData?.orderURL) || 
+                {(((transactionData?.transactionStatusId == 4 || transactionData?.transactionStatusId == 5) && transactionData?.transactionTypeId == 1 && (transactionData?.transferTypeId == 2 || transactionData?.transferTypeId == 5 || transactionData?.transferTypeId == 10)) || 
+                (transactionData?.transactionStatusId != 4 && (transactionData?.transactionTypeId == 1 || transactionData?.transactionTypeId == 2) && (transactionData?.transferTypeId == 2 || transactionData?.transferTypeId == 5 || transactionData?.transferTypeId == 10) && !transactionData?.orderURL) || 
                 (transactionData?.orderURL && (transactionData?.transactionStatusId == 1 || transactionData?.transactionStatusId == 3)))
                   && (
                     <View>
@@ -845,10 +845,10 @@ export default function TransactionDetailScreen({ route, navigation }) {
                           fontSize: 22,
                           fontWeight: 'bold',
                         }}>
-                        PayPal Details
+                        {transactionData?.transferTypeId == 2 ? 'PayPal' : transactionData?.transferTypeId == 5 ? 'Ali Pay' : transactionData?.transferTypeId == 10 ? 'PayNow' : ''} Details
                       </Text>
                    
-                        {transactionData?.transactionStatusId == 3 && (
+                        {(transactionData?.transactionStatusId == 3 || (transactionData?.transferTypeId == 5 || transactionData?.transferTypeId == 10)) && (
                           <View
                             style={{
                               flexDirection: 'row',
@@ -893,6 +893,31 @@ export default function TransactionDetailScreen({ route, navigation }) {
                                 marginTop: 20,
                               }}>
                               {transactionData.emailAddress}
+                            </Text>
+                          </View>
+}
+
+{ transactionData?.accountNumber  &&
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                             Account Number
+                            </Text>
+                            <Text
+                              style={{
+                                color: 'white',
+                                fontSize: 16,
+                                marginTop: 20,
+                              }}>
+                              {transactionData.accountNumber}
                             </Text>
                           </View>
 }
@@ -1026,7 +1051,7 @@ showToast('Copied!');
       paddingLeft: 20,
       paddingTop: 20,
       paddingRight: 20,
-      backgroundColor: '#13150F',
+    //  backgroundColor: '#13150F',
     }}>
     <Pressable
       onPressIn={handleContinuePressIn}
@@ -1079,7 +1104,7 @@ showToast('Copied!');
                   paddingLeft: 20,
                   paddingRight: 20,
                   paddingTop: 20,
-                  backgroundColor: '#13150F',
+              //    backgroundColor: '#13150F',
                 }}>
              
                 <Pressable
@@ -1121,7 +1146,7 @@ showToast('Copied!');
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderWidth: 2,
-                    backgroundColor: isCancelPressed ? '#FFBDBB' : '#13150F',
+                    backgroundColor: isCancelPressed ? '#FFBDBB' : '#2A2C29',
                     borderColor: '#FFBDBB',
                   }}>
                   <Text

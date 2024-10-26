@@ -20,12 +20,14 @@ export default function NotificationItem({ notificationData, navigation }) {
       onPressOut={handleRelease}
       style={{
         paddingLeft: 20,
-        paddingTop: 15,
+        paddingTop: 20,
         paddingBottom: 20,
         paddingRight: 20,
         backgroundColor: isPressed ? '#2A2C29' : '#13150F',
       }}
-      onPress={() => {}}>
+      onPress={() => {
+        navigation.navigate(notificationData.navigationScreen, JSON.parse(notificationData.navigationParam));
+      }}>
       <View style={{ flexDirection: 'row' }}>
         <View
           style={{

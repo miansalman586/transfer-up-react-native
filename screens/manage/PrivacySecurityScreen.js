@@ -300,10 +300,31 @@ navigation.addListener('focus', onFocus);
                 backgroundColor: isLogoutPressed ? '#2A2C29' : '#13150F',
               }}
               onPress={async () => {
-                let result = await httpRequest('customer/logout', 'put', null, true, setIsLoading);
-                if (result.success) {
+                Alert.alert(
+                  'Confirmation',
+                  'Are you sure you want to logout?',
+                  [
+                    {
+                      text: 'Close',
+                      style: 'destructive',
+                      onPress: async () => {
+                     
+             
+                        let result = await httpRequest('customer/logout', 'put', null, true, setIsLoading);
+                        if (result.success) {
+        
+                        }
+                      },
+                    },
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                  ]
+                );
 
-                }
+
+
               }}>
               <View style={{ flexDirection: 'row' }}>
                 <View

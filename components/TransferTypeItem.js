@@ -1,6 +1,7 @@
 import { View, Text, Image, Pressable, TouchableOpacity } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import TransferTypeIcon from './TransferTypeIcon';
 
 import RadioButton from './RadionButton';
 
@@ -28,20 +29,7 @@ export default function TransferTypeItem({ transferTypeId, transferTypeData, cal
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          {transferTypeData.transferTypeId == 2 && (
-            <FontAwesome
-              name={ 'paypal'}
-              size={23.5}
-              color={'white'}
-            />
-          )}
-             {transferTypeData.transferTypeId == 9 && (
-            <FontAwesome
-              name={'bank'}
-              size={23.5}
-              color={'white'}
-            />
-          )}
+         <TransferTypeIcon  transferType={transferTypeData} />
         </View>
         <View style={{ marginTop: 3, flex: 1 }}>
           <View
