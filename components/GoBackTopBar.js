@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-export default function GoBackTopBar({ navigation }) {
+export default function GoBackTopBar({ navigation, callback }) {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePressIn = () => {
@@ -30,7 +30,11 @@ export default function GoBackTopBar({ navigation }) {
           alignItems: 'center',
         }}
         onPress={() => {
-          navigation.goBack();
+          if (callback) {
+            callback();
+          } else {
+            navigation.goBack();
+          }
         }}>
         <FontAwesome5
           name="arrow-left"

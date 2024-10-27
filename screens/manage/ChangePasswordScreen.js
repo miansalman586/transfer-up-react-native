@@ -289,9 +289,9 @@ const {showToast} = route.params;
             onPress={handleContinue}
             disabled={
               isNewPasswordErrorInput ||
+              !newPasswordInputValue ||
               isCurrentPasswordErrorInput ||
-              !currentPasswordInputValue ||
-              !newPasswordInputValue
+              !currentPasswordInputValue 
             }
             style={{
               position: 'absolute',
@@ -304,8 +304,8 @@ const {showToast} = route.params;
               alignItems: 'center',
               backgroundColor:
                 isNewPasswordErrorInput ||
-                isCurrentPasswordErrorInput ||
                 !newPasswordInputValue ||
+                isCurrentPasswordErrorInput ||
                 !currentPasswordInputValue
                   ? '#2A2C29'
                   : isContinuePressed

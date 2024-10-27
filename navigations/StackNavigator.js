@@ -20,13 +20,19 @@ import NotificationScreen from '../screens/NotificationScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import ChangePhoneNumberScreen from '../screens/profile/ChangePhoneNumberScreen';
 import ChangePhoneNumberOTPScreen from '../screens/profile/ChangePhoneNumberOTPScreen';
+import LoginScreen from '../screens/LoginScreen';
+import StartScreen from '../screens/StartScreen';
+import OnBoardingScreen from '../screens/OnBoardingScreen';
+import EmailAddressRegisterScreen from  '../screens/register/EmailAddressRegisterScreen';
+import PhoneNumberRegisterScreen from '../screens/register/PhoneNumberRegisterScreen';
+import PersonalDetailRegisterScreen from '../screens/register/PersonalDetailRegisterScreen';
 
 const Stack = createStackNavigator();
 
 export default function StackNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeTab">
+      <Stack.Navigator initialRouteName="Start">
         <Stack.Screen
           name="HomeTab"
           component={HomeTabNavigator}
@@ -167,6 +173,60 @@ export default function StackNavigator() {
 <Stack.Screen
           name="ChangePhoneNumberOTP"
           component={ChangePhoneNumberOTPScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+            gestureEnabled: false
+
+          }}
+        />
+
+
+<Stack.Screen
+          name="Start"
+          component={StartScreen}
+          options={{
+            headerShown: false,
+            
+          }}
+        />
+
+<Stack.Screen
+          name="OnBoarding"
+          component={OnBoardingScreen}
+          options={{
+            headerShown: false,
+            gestureEnabled: false
+          }}
+        />
+
+
+<Stack.Screen
+          name="EmailAddressRegister"
+          component={EmailAddressRegisterScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="PhoneNumberRegister"
+          component={PhoneNumberRegisterScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="PersonalDetailRegister"
+          component={PersonalDetailRegisterScreen}
           options={{
             headerShown: false,
           }}

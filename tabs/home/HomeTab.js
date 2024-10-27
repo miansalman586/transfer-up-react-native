@@ -7,6 +7,7 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  AppState
 } from 'react-native';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -60,7 +61,7 @@ export default function HomeTab({ navigation }) {
 
   const onFocus = async () => {
     setBalances(null);
-    httpRequest('customer/get-balance', 'get', null, true).then(async balances=>{
+    httpRequest('customer/get-balance', 'get', null, true, null, navigation).then(async balances=>{
       balances = await balances.json();
       if (balances) {
         setBalances(balances);
@@ -69,7 +70,7 @@ export default function HomeTab({ navigation }) {
     });
  
     setProfileImage(null);
-    httpRequest('customer/get-profile-image', 'get', null, true, null).then(async image=>{
+    httpRequest('customer/get-profile-image', 'get', null, true, null, navigation).then(async image=>{
       if (image.status == 200) {
         image = await image.json();
         setProfileImage('data:image/jpeg;base64,' + image.image); 
@@ -83,7 +84,9 @@ export default function HomeTab({ navigation }) {
       'customer/get-transaction?pageNumber=1&pageSize=3',
       'get',
       null,
-      true
+      true,
+      null,
+      navigation
     ).then(async transactions=>{
       transactions = await transactions.json();
       if (transactions) setTransactions(transactions);
@@ -95,7 +98,9 @@ export default function HomeTab({ navigation }) {
       'customer/get-setting',
       'get',
       null,
-      true
+      true,
+      null,
+      navigation
     ).then(async result=>{
 
      let setting = await result.json();
@@ -111,7 +116,9 @@ export default function HomeTab({ navigation }) {
       'public/get-currency',
       'get',
       null,
-      false
+      false,
+      null,
+      navigation
     ).then(async currencies => {
       currencies = await currencies.json();
       global.currencies = currencies;
@@ -121,7 +128,9 @@ export default function HomeTab({ navigation }) {
       'public/get-country',
       'get',
       null,
-      false
+      false,
+      null,
+      navigation
     ).then(async countries => {
       countries = await countries.json();
       global.countries = countries;
@@ -131,7 +140,9 @@ export default function HomeTab({ navigation }) {
       'public/get-transfer-type',
       'get',
       null,
-      false
+      false,
+      null,
+      navigation
     ).then(async transferTypes=>{
       transferTypes = await transferTypes.json();
       global.transferTypes = transferTypes;
@@ -173,10 +184,25 @@ export default function HomeTab({ navigation }) {
     setIsNotificationPressed(false);
   };
 
+  const handleAppStateChange = async (nextAppState) => {
+    if (nextAppState === 'active') {
+      let token = await SecureStore.getItemAsync('JwtToken');
+      if (!token) {
+        navigation.navigate('Login');
+      }
+    }
+  };
+
   useEffect(() => {
     onInit();
 
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+
     navigation.addListener('focus', onFocus);
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   return (
@@ -499,7 +525,8 @@ export default function HomeTab({ navigation }) {
                             'post',
                             { currencyId: currencyData.currencyId },
                             true,
-                            setIsLoading
+                            setIsLoading,
+                            navigation
                           );
                           if (result.status == 200) {
                             onFocus();

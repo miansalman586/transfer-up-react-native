@@ -7,17 +7,20 @@ export default async function httpRequest(
   method,
   body,
   auth,
-  setIsLoading
+  setIsLoading,
+  navigation,
+  isPublic
 ) {
   try {
     if (setIsLoading) setIsLoading(true);
 
-    await SecureStore.setItemAsync('JwtToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZ2l2ZW5uYW1lIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc3VybmFtZSI6InN0cmluZyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFiYyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3Bvc3RhbGNvZGUiOiIrOTIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9tb2JpbGVwaG9uZSI6IjEyMzQ1NiIsImV4cCI6MjM1OTU3NDAwNX0.XUgbOfnHtO-Ylr1MKshoQBj0EV1LYZRtIXwsMY6GjQc')
+    let  jwt = await SecureStore.getItemAsync('JwtToken');
+    if (!jwt && !isPublic) {
+      navigation.navigate('Login');
 
-    let jwt;
-    if (auth) {
-      jwt = await SecureStore.getItemAsync('JwtToken');
+      return;
     }
+
 
     let requestBody;
     if (body) {
@@ -27,13 +30,20 @@ export default async function httpRequest(
     const response = await fetch('http://10.101.41.218/api/' + url, {
       method: method,
       headers: {
-        Authorization: 'Bearer ' + jwt,
+        Authorization: 'Bearer ' + (auth ? jwt : ''),
         'Content-Type': 'application/json',
       },
       body: requestBody,
     });
 
     if (setIsLoading) setIsLoading(false);
+
+    if ((response.status == 400 || response.status == 401) && !isPublic) {
+      await SecureStore.deleteItemAsync('JwtToken');
+      navigation.navigate('Login');
+
+      return;
+    }
 
     return response;
   } catch (error) {

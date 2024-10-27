@@ -1,29 +1,47 @@
 import ScreenLoader from '../components/ScreenLoader';
 
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar,Text} from 'react-native';
 
 import { useEffect } from 'react';
-import * as GlobalService from '../services/GlobalService';
 import * as SecureStore from 'expo-secure-store';
 
 export default function StartScreen({ navigation }) {
-  const onFocus = async () => {
-    let isLoggedIn = await GlobalService.isLoggedIn();
-    if (isLoggedIn) {
-      navigation.navigate('Tab');
-    } else {
-      navigation.navigate('Login', { entityId: 2 });
-    }
-  };
-
   useEffect(() => {
-    onFocus();
+
+
+    setTimeout(function(){
+      SecureStore.getItemAsync('JwtToken').then(token=> {
+        if (token)
+          navigation.navigate('HomeTab');
+        else
+        navigation.navigate('OnBoarding');
+      });
+    }, 1000);
+ 
+   
+
+
   }, []);
 
   return (
-    <View>
+    <View style={{
+      height: '100%',
+      backgroundColor: '#13150F',
+      justifyContent: 'center', 
+      alignItems: 'center', 
+    }}>
       <StatusBar barStyle="light-content" />
-      <ScreenLoader />
+     
+      <Text
+              style={{
+                textAlign: 'center',
+                color: '#2a80b9',
+                fontSize: 32,
+                fontWeight: 'bold',
+              }}>
+              TRANSFERUP
+            </Text>
+
     </View>
   );
 }

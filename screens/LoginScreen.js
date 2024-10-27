@@ -2,24 +2,19 @@ import { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
-  ScrollView,
+  StatusBar,
   Text,
   Pressable,
   Alert,
 } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 import Entypo from 'react-native-vector-icons/Entypo';
 
-import GoBackTopBar from '../components/GoBackTopBar';
 import ScreenLoader from '../components/ScreenLoader';
-
-import * as MerchantService from '../services/user/MerchantService';
-import * as CustomerService from '../services/user/CustomerService';
-
-import * as GlobalService from '../services/GlobalService';
+import GoBackTopBar from '../components/GoBackTopBar';
 
 export default function LoginScreen({ route, navigation }) {
-  const { entityId } = route.params;
 
   const [isPasswordPressed, setisPasswordPressed] = useState(false);
 
@@ -56,174 +51,30 @@ export default function LoginScreen({ route, navigation }) {
   const handleLogin = async () => {
     handleLoginRelease();
 
-    if (entityId == 1) {
-      let result = await MerchantService.login(
-        emailAddressInputValue,
-        passwordInputValue,
-        null,
-        null,
-        setIsLoading,
-        navigation
-      );
-      if (result.Success && result.StatusCode == 201) {
-        if (result.Data.TwoStepVerificationId == 1) {
-          navigation.navigate('OTP', {
-            entityId,
-            emailAddress: emailAddressInputValue,
-            phoneNumber: result.Data.CountryCode + result.Data.PhoneNumber,
-            callBack: async (emailOTP, smsOTP, setIsLoading) => {
-              let result = await MerchantService.login(
-                emailAddressInputValue,
-                passwordInputValue,
-                emailOTP,
-                smsOTP,
-                setIsLoading,
-                navigation
-              );
-              if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId != 7
-              ) {
-                await GlobalService.login(navigation, result.Data.JwtToken);
-              } else if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId == 7
-              ) {
-                navigation.goBack();
-                Alert.alert('Error', result.Data.BlockedReason);
-              } else {
-                Alert.alert('Error', result.Message);
-              }
-            },
-          });
-        } else if (result.Data.TwoStepVerificationId == 2) {
-          navigation.navigate('TwoStepVerificationNotification', {
-            entityId,
-            callBack: async (notificationCode, setIsLoading) => {
-              let result = await MerchantService.login(
-                emailAddressInputValue,
-                passwordInputValue,
-                null,
-                null,
-                setIsLoading,
-                navigation,
-                notificationCode
-              );
-              if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId != 7
-              ) {
-                await GlobalService.login(navigation, result.Data.JwtToken);
-              } else if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId == 7
-              ) {
-                navigation.goBack();
-                Alert.alert('Error', result.Data.BlockedReason);
-              } else {
-                Alert.alert('Error', result.Message);
-              }
-            },
-          });
-        } else if (result.Data.TwoStepVerificationId == 3) {
-          navigation.navigate('TwoStepVerificationAuthentication', {
-            entityId,
-            callBack: async (setIsLoading) => {},
-          });
-        }
+    setIsLoading(true);
+
+    let result = await fetch('http://10.101.41.218/api/token/customer', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        emailAddress: emailAddressInputValue,
+        password: passwordInputValue
+       }),
+    });
+    setIsLoading(false);
+
+
+      if (result.status == 200) {
+        result = await result.json();
+        await SecureStore.setItemAsync('JwtToken', result.token);
+        navigation.navigate('HomeTab');
       } else {
-        Alert.alert('Error', result.Message);
+        result = await result.json();
+        Alert.alert('Error', result.message)
       }
-    } else if (entityId == 2) {
-      let result = await CustomerService.login(
-        emailAddressInputValue,
-        passwordInputValue,
-        null,
-        null,
-        setIsLoading,
-        navigation
-      );
-      if (result.Success && result.StatusCode == 201) {
-        if (result.Data.TwoStepVerificationId == 1) {
-          navigation.navigate('OTP', {
-            entityId,
-            emailAddress: emailAddressInputValue,
-            phoneNumber: result.Data.CountryCode + result.Data.PhoneNumber,
-            callBack: async (emailOTP, smsOTP, setIsLoading) => {
-              try {
-                let result = await CustomerService.login(
-                  emailAddressInputValue,
-                  passwordInputValue,
-                  emailOTP,
-                  smsOTP,
-                  setIsLoading,
-                  navigation
-                );
-                if (
-                  result.Success &&
-                  result.StatusCode == 200 &&
-                  result.Data.AccountStatusId != 7
-                ) {
-                  await GlobalService.login(navigation, result.Data.JwtToken);
-                } else if (
-                  result.Success &&
-                  result.StatusCode == 200 &&
-                  result.Data.AccountStatusId == 7
-                ) {
-                  navigation.goBack();
-                  Alert.alert('Error', result.Data.BlockedReason);
-                } else {
-                  Alert.alert('Error', result.Message);
-                }
-              } catch (e) {
-                alert(e);
-              }
-            },
-          });
-        } else if (result.Data.TwoStepVerificationId == 2) {
-          navigation.navigate('TwoStepVerificationNotification', {
-            callback: async (notificationCode, setIsLoading) => {
-              let result = await CustomerService.login(
-                emailAddressInputValue,
-                passwordInputValue,
-                null,
-                null,
-                setIsLoading,
-                navigation,
-                notificationCode
-              );
-              if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId != 7
-              ) {
-                await GlobalService.login(navigation, result.Data.JwtToken);
-              } else if (
-                result.Success &&
-                result.StatusCode == 200 &&
-                result.Data.AccountStatusId == 7
-              ) {
-                navigation.goBack();
-                Alert.alert('Error', result.Data.BlockedReason);
-              } else {
-                Alert.alert('Error', result.Message);
-              }
-            },
-          });
-        } else if (result.Data.TwoStepVerificationId == 3) {
-          navigation.navigate('TwoStepVerificationAuthentication', {
-            entityId,
-            callBack: async (setIsLoading) => {},
-          });
-        }
-      } else {
-        Alert.alert('Error', result.Message);
-      }
-    }
+
   };
 
   const onFocus = async () => {
@@ -247,7 +98,21 @@ export default function LoginScreen({ route, navigation }) {
             height: '100%',
             backgroundColor: '#13150F',
           }}>
-          <GoBackTopBar navigation={navigation} goBackScreen="OnBoarding" />
+          <GoBackTopBar navigation={navigation} callback={()=>{
+            navigation.navigate('OnBoarding');
+          }} />
+
+              <StatusBar barStyle="light-content" />
+              <Text
+              style={{
+                textAlign: 'center',
+                color: '#2a80b9',
+                fontSize: 32,
+                fontWeight: 'bold',
+                marginBottom: 30,
+              }}>
+              TRANSFERUP
+            </Text>
           <Text
             style={{
               marginLeft: 20,
@@ -255,12 +120,10 @@ export default function LoginScreen({ route, navigation }) {
               color: 'white',
               fontSize: 28,
               fontWeight: 'bold',
-              marginTop: 10,
               marginBottom: 20,
             }}>
             Login
           </Text>
-          <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ marginLeft: 20, marginRight: 20 }}>
               <View>
                 <Text style={{ color: 'white' }}>Email address</Text>
@@ -353,7 +216,7 @@ export default function LoginScreen({ route, navigation }) {
                 onPress={handleLogin}
                 disabled={!passwordInputValue || !emailAddressInputValue}
                 style={{
-                  marginTop: 25,
+                  marginTop: 40,
                   height: 50,
                   borderRadius: 50,
                   justifyContent: 'center',
@@ -375,7 +238,6 @@ export default function LoginScreen({ route, navigation }) {
                 </Text>
               </Pressable>
             </View>
-          </ScrollView>
         </View>
       )}
       {isLoading && <ScreenLoader />}

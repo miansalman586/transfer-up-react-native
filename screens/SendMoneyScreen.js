@@ -86,7 +86,7 @@ export default function SendMoneyScreen({ route, navigation }) {
 
     if (transferType.transferTypeId == 4) {
       setRecipient(null);
-    let result = await httpRequest('customer/get-transfer-pay-recipient-by-email-address?emailAddress=' + emailAddress, 'get', null, true, null);
+    let result = await httpRequest('customer/get-transfer-pay-recipient-by-email-address?emailAddress=' + emailAddress, 'get', null, true, null, navigation, false);
    
     
     if (result.status == 200) {
@@ -97,7 +97,7 @@ export default function SendMoneyScreen({ route, navigation }) {
     }
   } else {
     setRecipient(null);
-    let result = await httpRequest('customer/get-recipient-by-email-address?emailAddress=' + emailAddress + '&currencyId=' + newBalanceData?.currencyId + '&transferTypeId=' + transferType?.transferTypeId, 'get', null, true, null);
+    let result = await httpRequest('customer/get-recipient-by-email-address?emailAddress=' + emailAddress + '&currencyId=' + newBalanceData?.currencyId + '&transferTypeId=' + transferType?.transferTypeId, 'get', null, true, null, navigation, false);
     if (result.status == 200) {
       result = await result.json();
       setRecipient(result);
@@ -144,14 +144,14 @@ export default function SendMoneyScreen({ route, navigation }) {
       setRecipient(route.params.recipient);
     }
 
-   let result = await httpRequest('public/get-transaction-fee', 'get', null, false, null);
+   let result = await httpRequest('public/get-transaction-fee', 'get', null, false, null, navigation, false);
    if (result.status == 200) {
     result = await result.json();
-    setTransactionFee(result.find(e=>e.transactionFeeId == 2).fee)
+    setTransactionFee(result.find(e=>e.transactionFeeId == 2).fee?.toString())
    }
 
    if (transferType.transferTypeId == 9 || transferType.transferTypeId == 5  || transferType.transferTypeId == 10) {
-   let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + transferType.transferTypeId, 'get', null, true, null);
+   let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + transferType.transferTypeId, 'get', null, true, null, navigation, false);
    if (recip.status == 200) {
     recip = await recip.json();
     setRecipients(recip)
@@ -163,7 +163,7 @@ export default function SendMoneyScreen({ route, navigation }) {
     if (amount > 0 && (transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5)) {
     setBankFee(null);
     setIsDisableContinue(true);
-    let result = await httpRequest('customer/get-wise-quote?currencyId=' + balanceData?.currencyId + '&amount=' + amount, 'get', null, true, null);
+    let result = await httpRequest('customer/get-wise-quote?currencyId=' + balanceData?.currencyId + '&amount=' + amount, 'get', null, true, null, navigation, false);
     if (result.status == 200) {
       result = await result.json();
       let payment = result.paymentOptions.filter(e=>e.payIn == 'BALANCE')[0];
@@ -186,7 +186,7 @@ export default function SendMoneyScreen({ route, navigation }) {
       setIsMinAmountError(false);
     }
     setIsDisableContinue(false);
-  }
+  } 
 }
 
   useEffect(() => {
@@ -318,6 +318,7 @@ navigation.addListener('focus', onFocus);
                 isMinAmountErrorMsg
               }
             />
+            
 {transferType.transferTypeId != 4 &&
 <View>
 
@@ -530,7 +531,7 @@ navigation.addListener('focus', onFocus);
               </View>
             }
 
-            {(transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 | transferType?.transferTypeId == 10) &&
+            {(transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 || transferType?.transferTypeId == 10) && (
             <View>
                   <Text style={{ color: 'white' , marginTop: 20}}>Recipient</Text>
                 <TouchableOpacity activeOpacity={0.5} onPress={() => {
@@ -569,7 +570,7 @@ navigation.addListener('focus', onFocus);
                 </TouchableOpacity>
             </View>
 
-            }
+            )}
 
 {(transferType?.transferTypeId == 2 || transferType?.transferTypeId == 4) &&
 <View>
@@ -637,7 +638,7 @@ navigation.addListener('focus', onFocus);
                     currencyId: newBalanceData.currencyId,
                     amount: amount,
                     emailAddress: emailAddress
-                  }, true, setIsLoading);
+                  }, true, setIsLoading, navigation, false);
 
                   if (result.status == 200) {
                     navigation.navigate('Home');
@@ -657,7 +658,7 @@ navigation.addListener('focus', onFocus);
                     bicswift: recipient?.bicswift,
                     accountNumber: newBalanceData?.currencyId == 1006 ? null : recipient?.accountNumber,
                     iban: recipient?.iban
-                  }, true, setIsLoading);
+                  }, true, setIsLoading, navigation, false);
 
                   if (result.status == 200) {
                     navigation.navigate('Home');
