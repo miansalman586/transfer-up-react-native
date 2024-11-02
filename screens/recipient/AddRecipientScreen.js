@@ -747,7 +747,8 @@ const handleIBANBlur = async () => {
                           },
                           country: country
                         }
-                    }, true, setIsLoading);
+                    }, true, setIsLoading, navigation, false);
+                   
                     if (result.status == 200) {
                         navigation.goBack();
                     }  else {

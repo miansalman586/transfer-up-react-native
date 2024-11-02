@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 export default function TransactionSreen({ navigation }) {
   const [transactions, setTransactions] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState(null);
+
   const getTransactions = async (searchTerm) => {
     setTransactions(null);
     if (searchTerm) {
@@ -40,8 +42,12 @@ export default function TransactionSreen({ navigation }) {
   }
   };
 
+  const onFocus = () =>{
+    getTransactions(searchTerm);
+  };
+
   useEffect(() => {
-    getTransactions('');
+    navigation.addListener('focus', onFocus);
   }, []);
 
   return (
@@ -53,6 +59,7 @@ export default function TransactionSreen({ navigation }) {
       <GoBackTopBar navigation={navigation} />
       <InputSearch
         searchData={(value) => {
+          setSearchTerm(value);
           getTransactions(value);
         }}
       />

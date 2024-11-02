@@ -171,6 +171,7 @@ export default function SendMoneyScreen({ route, navigation }) {
         if (payment.disabled) {
           setBankFee('0.00');
           setIsMinAmountError(true);
+          setIsNoAmountError(false);
           setIsMinAmountErrorMsg(payment.disabledReason.message);
         } else {
           setBankFee(payment.fee.total.toString());
@@ -250,11 +251,14 @@ navigation.addListener('focus', onFocus);
 
                     if (parseFloat(value) + (parseFloat(value) * transactionFee) > newBalanceData?.totalBalance) {
                       setIsNoAmountError(true);
+                      setIsMinAmountError(false);
                     } else {
                       setIsNoAmountError(false);
+                      setIsMinAmountError(false);
                     }
 
                     setAmount(value);
+                  
                   }}
                   value={amount}
                   placeholderTextColor="white"

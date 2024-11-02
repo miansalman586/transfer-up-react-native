@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function Recipient({ recipient }) {
   return (
@@ -21,17 +22,25 @@ export default function Recipient({ recipient }) {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Icon
-            name={
-              recipient.transferTypeId == 1
-                ? 'bank'
-                : recipient.transferTypeId == 2
-                ? 'paypal'
-                : ''
+            {recipient.transferTypeId == 2 &&
+  <Icon
+  name={
+    recipient.transferTypeId == 2
+      ? 'paypal'
+      : ''
+  }
+  size={27.5}
+  color="white"
+/>
             }
-            size={27.5}
-            color="white"
-          />
+        
+             {recipient?.transferTypeId == 9 && (
+            <FontAwesome
+              name={'bank'}
+              size={23.5}
+              color={'white'}
+            />
+          )}
         </View>
         <View style={{ marginTop: 3, flex: 1 }}>
           <View

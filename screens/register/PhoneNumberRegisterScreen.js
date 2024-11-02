@@ -14,7 +14,7 @@ import httpRequest from '../../utils/httpRequest';
 
 export default function PhoneNumberRegisterScreen({ route, navigation }) {
 
-
+const [countries, setCountries] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const [isPhoneNumberInputFocused, setIsPhoneNumberInputFocused] =
@@ -30,6 +30,8 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
     const [phoneNumberInputValue, setPhoneNumberInputValue] = useState(null);
   
     const [isContinuePressed, setIsContinuePressed] = useState(false);
+
+    const [selectedCountry, setSelectedCountry] = useState(null);
   
     const handlePhoneNumberFocus = () => setIsPhoneNumberInputFocused(true);
     const handlePhoneNumberBlur = async () => {
@@ -44,10 +46,11 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
       handlePhoneNumberBlur();
   
       if (countryCodeInputValue.replace(/\+/g, '')) {
-        if (!global.countries?.some(e=>e.countryCode == countryCodeInputValue)) {
+        if (!countries?.some(e=>e.countryCode == countryCodeInputValue)) {
           setIsCountryCodeError(true);
         } else {
           setIsCountryCodeError(false);
+          setSelectedCountry(countries?.find(e=>e.countryCode == countryCodeInputValue));
         }
       } 
     };
@@ -64,10 +67,14 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
             if (result.status == 200) {
               setIsPhoneNumberExistsError(true);
             } else {
+              setIsPhoneNumberExistsError(false);
+
                 navigation.navigate('PersonalDetailRegister', {
                     emailAddress: route.params.emailAddress,
                     password: route.params.password,
-                    phoneNumber: phoneNumberInputValue,
+                    phoneNumber:  phoneNumberInputValue,
+                    countries: countries,
+                    country: selectedCountry
                 })
             }
           }
@@ -86,7 +93,7 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
             true
           ).then(async countries => {
             countries = await countries.json();
-            global.countries = countries;
+            setCountries(countries);
           });
       
        
@@ -211,8 +218,7 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
             onPress={handleContinue}
             disabled={
               !phoneNumberInputValue ||
-              isCountryCodeError ||
-              isPhoneNumberExistsError 
+              isCountryCodeError 
             }
             style={{
               marginTop: 40,
@@ -226,8 +232,7 @@ export default function PhoneNumberRegisterScreen({ route, navigation }) {
               alignItems: 'center',
               backgroundColor:
                 !phoneNumberInputValue ||
-              isCountryCodeError ||
-                isPhoneNumberExistsError
+              isCountryCodeError 
                   ? '#2A2C29'
                   : isContinuePressed
                   ? 'white'

@@ -60,6 +60,7 @@ export default function RecipientItem({ navigation, recipientData, backgroundCol
               color={'white'}
             />
           )}
+          
         </View>
         <View style={{ marginTop: 3, flex: 1 }}>
           <View

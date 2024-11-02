@@ -9,22 +9,21 @@ import {
   Pressable,
 } from 'react-native';
 import ScreenLoader from '../../components/ScreenLoader';
+import * as FileSystem from 'expo-file-system';
 
 import GoBackTopBar from '../../components/GoBackTopBar';
 import httpRequest from '../../utils/httpRequest';
 
-export default function TwoStepVerificationAuthenticationScreen({ route, navigation }) {
-  const [emailAddress, setEmailAddress] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState(null);
+export default function OTPVerificationRegisterScreen({ route, navigation }) {
   const [isPressed, setIsPressed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [emailCode, setEmailCode] = useState(Array(6).fill(''));
   const [phoneCode, setPhoneCode] = useState(Array(6).fill(''));
+  const [newPhoneCode, setNewPhoneCode] = useState(Array(6).fill(''));
 
-  const { callBack } = route.params;
 
-  const emailRefs = useRef(
+
+  const newPhoneRefs = useRef(
     Array(6)
       .fill(null)
       .map(() => React.createRef())
@@ -43,57 +42,66 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
     setIsPressed(false);
   };
 
-  const handlePress = () => {
+  const parseDate= (date)=>{
+const [day, month, year] = date.split('/');
+const formattedDob = `${year}-${month}-${day}`;
+return formattedDob;
+  };
+
+  const handlePress = async () => {
     if (
-      emailCode.every((digit) => digit !== '') &&
+      newPhoneCode.every((digit) => digit !== '') &&
       phoneCode.every((digit) => digit !== '')
     ) {
       handleRelease();
-      callBack(emailCode.join(''), phoneCode.join(''), setIsLoading);
+    
+      const base64 = await FileSystem.readAsStringAsync(route.params.idImage, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+     let result = await httpRequest('register/customer', 'post', {
+        firstName: route.params.firstName,
+        lastName: route.params.lastName,
+        dob: new Date(parseDate(route.params.dob)),
+        genderId: route.params.gender.id,
+        emailAddress: route.params.emailAddress,
+        password: route.params.password,
+        idTypeId: route.params.idType.idTypeId,
+        nationalityId:route.params.nationality.countryId,
+        address: route.params.address,
+        cityId: route.params.city.cityId,
+        countryId: route.params.country.countryId,
+        zipCode: route.params.zipCode,
+        phoneNumber:route.params.phoneNumber,
+        countryCode: route.params.country.countryCode,
+        idNo: route.params.idNo,
+        idExpiryDate: new Date(parseDate(route.params.idExpiryDate)),
+        emailAddressOTP: parseInt(phoneCode.toString().replace(/,/g, '')),
+        phoneNumberOTP: parseInt(newPhoneCode.toString().replace(/,/g, '')),
+        idImage: base64
+     },false, setIsLoading, navigation, true);
+     if (result.status == 200){
+      navigation.navigate('RegisterSuccess', {
+        id: 1
+      });
+     } else {
+        result = await result.json();
+        alert(JSON.stringify(result));
+     }
+
     }
   };
 
   const sendOTP = async () => {
-    const EmailAddress = global.emailAddress ?? route.params.emailAddress;
-    setEmailAddress(EmailAddress);
-
-    if (route.params.entityId == 1 || global.entityId == 1) {
-      await httpRequest(
-        'generate-merchant-otp-code',
-        'post',
-        { EmailAddress },
-        setIsLoading,
-        false,
-        navigation
-      );
-    } else if (route.params.entityId == 2 || global.entityId == 2) {
-      await httpRequest(
-        'generate-customer-otp-code',
-        'post',
-        { EmailAddress },
-        setIsLoading,
-        false,
-        navigation
-      );
-    }
+   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((route.params.country.countryCode + route.params.phoneNumber)), 'get', null, false, null, navigation, true);
+  httpRequest('public/generate-otp-code?otpType=' + route.params.emailAddress, 'get', null, false, null, navigation, true);
   };
 
   const onFocus = async () => {
     sendOTP();
-
-    if (global.countryCode && global.phoneNumber) {
-      setPhoneNumber(global.countryCode + global.phoneNumber);
-    } else {
-      setPhoneNumber(route.params.phoneNumber);
-    }
   };
 
   useEffect(() => {
-    const onFocusListener = navigation.addListener('focus', onFocus);
-
-    return () => {
-      onFocusListener()?.remove();
-    };
+    navigation.addListener('focus', onFocus);
   }, []);
 
   const handleCodeChange = (codeArray, setCodeArray, refs, index, value) => {
@@ -128,23 +136,23 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
                 OTP Verification
               </Text>
               <Text style={{ fontSize: 16, marginTop: 40, color: 'white' }}>
-                Enter the OTP sent to Email
+                Enter the OTP sent to your Email Address
               </Text>
               <Text
                 style={{ marginTop: 5, color: 'white', fontWeight: 'bold' }}>
-                {emailAddress}
+                {route.params.emailAddress}
               </Text>
               <View style={{ marginTop: 20, flexDirection: 'row' }}>
-                {emailCode.map((digit, index) => (
+                {phoneCode.map((digit, index) => (
                   <TextInput
                     key={index}
                     value={digit}
-                    ref={emailRefs.current[index]}
+                    ref={newPhoneRefs.current[index]}
                     onChangeText={(value) =>
                       handleCodeChange(
-                        emailCode,
-                        setEmailCode,
-                        emailRefs.current,
+                        phoneCode,
+                        setPhoneCode,
+                        newPhoneRefs.current,
                         index,
                         value
                       )
@@ -158,7 +166,8 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
                       marginRight: 10,
                       paddingTop: 15,
                       paddingBottom: 15,
-                      paddingLeft: 25,
+                      paddingLeft: 20,
+                      fontSize: 20,
                       paddingRight: 20,
                       flex: 1,
                       height: 60,
@@ -172,18 +181,18 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
               </Text>
               <Text
                 style={{ marginTop: 5, color: 'white', fontWeight: 'bold' }}>
-                {phoneNumber}
+                {route.params.phoneNumber}
               </Text>
               <View style={{ marginTop: 20, flexDirection: 'row' }}>
-                {phoneCode.map((digit, index) => (
+                {newPhoneCode.map((digit, index) => (
                   <TextInput
                     key={index}
                     value={digit}
                     ref={phoneRefs.current[index]}
                     onChangeText={(value) =>
                       handleCodeChange(
-                        phoneCode,
-                        setPhoneCode,
+                        newPhoneCode,
+                        setNewPhoneCode,
                         phoneRefs.current,
                         index,
                         value
@@ -200,6 +209,8 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
                       paddingBottom: 15,
                       paddingLeft: 25,
                       paddingRight: 20,
+                      paddingLeft: 20,
+                      fontSize: 20,
                       flex: 1,
                       height: 60,
                       color: 'white',
@@ -210,8 +221,8 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
               <Text style={{ fontSize: 16, marginTop: 40, color: 'white' }}>
                 Don't receive OTP?{' '}
                 <TouchableOpacity
-                  onPress={() => {
-                    sendOTP();
+                  onPress={async () => {
+                    await sendOTP();
                     Alert.alert('Success', 'OTP sent.');
                   }}>
                   <Text style={{ color: '#2a80b9', fontWeight: 'bold' }}>
@@ -228,7 +239,7 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
               onPress={handlePress}
               disabled={
                 !(
-                  emailCode.every((digit) => digit !== '') &&
+                  newPhoneCode.every((digit) => digit !== '') &&
                   phoneCode.every((digit) => digit !== '')
                 )
               }
@@ -240,7 +251,7 @@ export default function TwoStepVerificationAuthenticationScreen({ route, navigat
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: !(
-                  emailCode.every((digit) => digit !== '') &&
+                  newPhoneCode.every((digit) => digit !== '') &&
                   phoneCode.every((digit) => digit !== '')
                 )
                   ? '#2A2C29'
