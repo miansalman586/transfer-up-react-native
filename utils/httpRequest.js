@@ -36,6 +36,7 @@ export default async function httpRequest(
       body: requestBody,
     });
 
+
     if (setIsLoading) setIsLoading(false);
 
     if ((response.status == 400 || response.status == 401) && !isPublic) {

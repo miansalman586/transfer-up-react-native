@@ -14,6 +14,7 @@ import ItemLoader from '../components/ItemLoader';
 import Recipient from '../components/Recipient';
 
 import ScreenLoader from '../components/ScreenLoader';
+import RecipientItem from '../components/RecipientItem';
 
 export default function AutoWithdrawalRecipientScreen({ route, navigation })  {
 const {transferTypeId, payPalEmailAddress, balanceData} = route.params;
@@ -21,6 +22,8 @@ const {transferTypeId, payPalEmailAddress, balanceData} = route.params;
   const [isLoading, setIsLoading] = useState(false);
 
   const [transferType, setTransferType] = useState(null);
+  const bottomSheetRecipientModalRef = useRef(null);
+  const [recipients, setRecipients] = useState([]);
 
   const [transferTypeSearchText, setTransferTypeSearchText] = useState(null);
 
@@ -28,6 +31,10 @@ const {transferTypeId, payPalEmailAddress, balanceData} = route.params;
 
   const [isEmailAddressFocused, setEmailAddressFocused] = useState(false);
   const [emailAddress, setEmailAddress] = useState(null);
+  const [recipientSearchText, setRecipientSearchText] = useState(null);
+
+  const [isIBANFocused, setIBANFocused] = useState(false);
+  const [iban, setIBAN] = useState(null);
 
   const [isContinuePressed, setIsContinuePressed] = useState(false);
 
@@ -59,9 +66,29 @@ const {transferTypeId, payPalEmailAddress, balanceData} = route.params;
 
 };
 
+
+const handleIBANFocus = () => {
+  setIBANFocused(true);
+};
+
+const handleIBANBlur = async () => {
+  setIBANFocused(false);
+};
+
   const onFocus = async () =>{
-setTransferType(global.transferTypes?.find(e=>e.transferTypeId == transferTypeId));
+
+    var tr = global.transferTypes?.find(e=>e.transferTypeId == transferTypeId);
+setTransferType(tr);
 setEmailAddress(payPalEmailAddress);
+
+if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId == 10) {
+  let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + tr.transferTypeId, 'get', null, true, null, navigation, false);
+  if (recip.status == 200) {
+   recip = await recip.json();
+   setRecipients(recip)
+   setRecipient(recip.find(e=>e.recipientId == balanceData?.recipientId));
+  }
+ }
   };
 
   useEffect(() => {
@@ -129,7 +156,8 @@ setEmailAddress(payPalEmailAddress);
                
                   </TouchableOpacity>
 
-                  
+             {transferType?.transferTypeId == 2 &&
+<View>
 <Text style={{ color: 'white', marginTop:20 }}>Email Address</Text>
                 <TextInput
                   style={{
@@ -160,12 +188,57 @@ setEmailAddress(payPalEmailAddress);
                   onBlur={handleEmailAddressBlur}
                   selectionColor="#2a80b9"
                 />
+                </View>
+              }  
+
+  
+{(transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 || transferType?.transferTypeId == 10) && (
+            <View>
+                  <Text style={{ color: 'white' , marginTop: 20}}>Recipient</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                      bottomSheetRecipientModalRef.current.present();
+                }}>
+                <View
+                style={{
+                  height: 52,
+                  paddingLeft: 5,
+                  color: 'white',
+                  paddingRight: 20,
+                  backgroundColor: '#2A2C29',
+                  marginTop: 10,
+                  fontSize: 18,
+                  flexDirection: 'row'
+                  , justifyContent: 'space-between'
+                }}>
+                  <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginLeft: 20,
+                        marginTop: 15
+                  }}>
+      {recipient && recipient?.firstName && recipient?.lastName ? recipient?.firstName + ' ' + recipient?.lastName : ''}
+
+                  </Text>
+   <FontAwesome5
+                      style={{ marginTop: 15, marginLeft: 10 }}
+                      name="chevron-down"
+                      size={18}
+                      color="white"
+                    />
+
+                </View>
+             
+                </TouchableOpacity>
+            </View>
+
+            )}
+
                     {!recipient && (
              <View style={{ marginLeft: -20 , marginTop:10, flex: 'row' }}>
              <ItemLoader key={1} count={1} />
            </View>
             )}
-                 {recipient?.fullName && 
+                 {(recipient?.fullName || recipient?.firstName && recipient?.lastName)&& 
             <Recipient recipient={recipient} />
 
             }
@@ -180,17 +253,24 @@ setEmailAddress(payPalEmailAddress);
               onPressOut={handleContinuePressOut}
               onPress={async () => {
                 handleContinuePressOut();
-            
                     let result = await httpRequest('customer/update-auto-withdrawal-recipient', 'put', {
                       currencyId:balanceData?.currencyId,
                       transferTypeId:transferType?.transferTypeId,
-                      emailAddress: emailAddress
-                    }, true, setIsLoading);
-                    if (result.success) {
+                      emailAddress: emailAddress,
+                      iban: recipient?.iban,
+                      recipientId: recipient?.recipientId,
+                      firstName: recipient?.firstName,
+                      lastName: recipient?.lastName
+                    }, true, setIsLoading, navigation, false);
+                   
+                    if (result.status == 200) {
                         navigation.goBack();
                     } 
               }}
-              disabled={!transferTypeId || !emailAddress}
+              disabled={!transferTypeId || 
+                (transferType?.transferTypeId == 2 && !emailAddress) ||
+                (transferType?.transferTypeId == 9 && !recipient)
+              }
               style={{
                 marginTop: 'auto',
                 marginBottom: 40,
@@ -199,7 +279,9 @@ setEmailAddress(payPalEmailAddress);
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor:
-                !transferTypeId || !emailAddress
+                !transferTypeId || 
+                (transferType?.transferTypeId == 2 && !emailAddress) ||
+                (transferType?.transferTypeId == 9 && !recipient)
                     ? '#2A2C29'
                     : isContinuePressed
                     ? 'white'
@@ -215,6 +297,51 @@ setEmailAddress(payPalEmailAddress);
               </Text>
             </Pressable>
           </View>
+          {(transferType?.transferTypeId == 9 || transferType?.transferTypeId == 5 || transferType?.transferTypeId == 10) &&
+<BottomSheet
+            bottomSheetModalRef={bottomSheetRecipientModalRef}
+            snapPoints={['90%']}
+            title={'Select recipient'}
+            content={
+              <View>
+                <View style={{ marginBottom: 20, marginTop: 10 }}>
+                  <InputSearch
+                    borderColor="white"
+                    searchData={(value) => {
+                      setRecipientSearchText(value);
+                    }}
+                  />
+                </View>
+                <ScrollView>
+                  {recipients
+                  
+                    ?.filter(
+                      (x) =>
+                        !recipientSearchText ||
+                        (x.firstName + ' ' + x.lastName)
+                          .toLowerCase()
+                          .includes(recipientSearchText.toLowerCase())
+                    )?.filter(e=>e.currencyId == balanceData?.currencyId)
+                    ?.map((recipientData, index) => (
+                      <RecipientItem
+                        key={index}
+                        recipientId={recipient}
+                        backgroundColor={"#2A2C29"}
+                        customerRecipientId={recipient.customerRecipientId}
+                        isRadioButton={true}
+                        recipientData={recipientData}
+                        callback={async () => {
+                          bottomSheetRecipientModalRef.current.close();
+
+                          setRecipient(recipientData);
+                        }}
+                      />
+                    ))}
+                </ScrollView>
+              </View>
+            }
+          />
+          }
             <BottomSheet
             bottomSheetModalRef={bottomSheetPTransferTypeModalRef}
             snapPoints={['90%']}
@@ -231,6 +358,14 @@ setEmailAddress(payPalEmailAddress);
                 </View>
                 <ScrollView>
                   {global.transferTypes
+                  ?.filter(
+                    (e) => (e.transactionTypeId == 1 &&
+
+                            (e.transferTypeId != 2 || (e.transferTypeId == 2 && e.payPalCurrencyId?.split(',').some(t=> t == balanceData?.currencyId))) && 
+                             (e.transferTypeId != 9 || (e.transferTypeId == 9 && e.currencyId?.split(',').some(t=> t == balanceData?.currencyId)))
+                            
+                            )
+                  )
                     ?.filter(
                       (x) =>
                         !transferTypeSearchText ||
@@ -238,6 +373,9 @@ setEmailAddress(payPalEmailAddress);
                           .toLowerCase()
                           .includes(transferTypeSearchText.toLowerCase())
                     )
+                  ?.filter((value, index, self) => 
+                    index === self.findIndex((t) => t.transferTypeId === value.transferTypeId)
+                  )
                     ?.filter(
                       (e) => e.transferTypeId != 3 && e.transferTypeId != 4
                     )

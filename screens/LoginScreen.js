@@ -65,16 +65,26 @@ export default function LoginScreen({ route, navigation }) {
     });
     setIsLoading(false);
 
-
       if (result.status == 200) {
-        result = await result.json();
+    result = await result.json();
+
         await SecureStore.setItemAsync('JwtToken', result.token);
         navigation.navigate('HomeTab');
       } else {
-        result = await result.json();
-        Alert.alert('Error', result.message)
-      }
+    result = await result.json();
 
+        if(result.message == 'Your account is not verified yet.' || result.message == "Your account is in process for verification.") {
+          navigation.navigate('RegisterSuccess', {
+            id: 2
+          });
+        } else if (result.message == 'Your account is blocked. Please contact customer care.') {
+          navigation.navigate('RegisterSuccess', {
+            id: 3
+          });
+        } else {
+          Alert.alert('Error', result.message)
+        }
+      } 
   };
 
   const onFocus = async () => {
@@ -216,7 +226,7 @@ export default function LoginScreen({ route, navigation }) {
                 onPress={handleLogin}
                 disabled={!passwordInputValue || !emailAddressInputValue}
                 style={{
-                  marginTop: 40,
+                  marginTop: 30,
                   height: 50,
                   borderRadius: 50,
                   justifyContent: 'center',

@@ -248,6 +248,7 @@ navigation.addListener('focus', onFocus);
                       value = 0.00
                     }
 
+
                     if (parseFloat(value) + (parseFloat(value) * transactionFee) > newBalanceData?.totalBalance) {
                       setIsNoAmountError(true);
                     } else {
@@ -255,6 +256,7 @@ navigation.addListener('focus', onFocus);
                     }
 
                     setAmount(value);
+                  
                   }}
                   value={amount}
                   placeholderTextColor="white"
@@ -303,7 +305,7 @@ navigation.addListener('focus', onFocus);
                 </TouchableOpacity>
               </View>
               <ErrorMessage
-              flag={isNoAmountError && amount}
+              flag={isNoAmountError && amount == '' || amount == 0.00 ? false : true}
               message={
                 'You only have ' +
                 newBalanceData?.totalBalance +
@@ -313,7 +315,7 @@ navigation.addListener('focus', onFocus);
               }
             />
                 <ErrorMessage
-              flag={isMinAmountError && amount}
+              flag={isMinAmountError && amount == '' || amount == 0.00 ? false : true}
               message={
                 isMinAmountErrorMsg
               }

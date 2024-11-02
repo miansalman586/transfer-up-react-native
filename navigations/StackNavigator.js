@@ -26,6 +26,10 @@ import OnBoardingScreen from '../screens/OnBoardingScreen';
 import EmailAddressRegisterScreen from  '../screens/register/EmailAddressRegisterScreen';
 import PhoneNumberRegisterScreen from '../screens/register/PhoneNumberRegisterScreen';
 import PersonalDetailRegisterScreen from '../screens/register/PersonalDetailRegisterScreen';
+import AddressDetailRegisterScreen from '../screens/register/AddressDetailRegisterScreen';
+import RegisterSuccessScreen from '../screens/register/RegisterSuccessScreen';
+
+import OTPVerificationRegisterScreen from '../screens/register/OTPVerificationRegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -229,6 +233,34 @@ export default function StackNavigator() {
           component={PersonalDetailRegisterScreen}
           options={{
             headerShown: false,
+          }}
+        />
+
+<Stack.Screen
+          name="AddressDetailRegister"
+          component={AddressDetailRegisterScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+
+<Stack.Screen
+          name="OTPVerificationRegister"
+          component={OTPVerificationRegisterScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+
+
+<Stack.Screen
+          name="RegisterSuccess"
+          component={RegisterSuccessScreen}
+          options={{
+            headerShown: false,
+            gestureEnabled: false
           }}
         />
 

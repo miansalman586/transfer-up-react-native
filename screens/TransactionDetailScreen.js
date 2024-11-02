@@ -1125,7 +1125,7 @@ showToast('Copied!');
                            }, true, setIsLoading);
 
                            if (result.status == 200) {
-                            navigation.goBack();
+                            navigation.navigate('HomeTab');
                            } else {
                             Alert.alert('Error', result.Message);
                            }

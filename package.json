@@ -9,7 +9,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@gorhom/bottom-sheet": "^4",
-    "@react-native-community/datetimepicker": "8.0.1",
+    "@react-native-community/datetimepicker": "^8.0.1",
     "@react-navigation/bottom-tabs": "6.3.1",
     "@react-navigation/material-top-tabs": "*",
     "@react-navigation/native": "6.0.10",
@@ -32,6 +32,7 @@
     "react": "18.2.0",
     "react-content-loader": "*",
     "react-native": "0.74.5",
+    "react-native-date-picker": "^5.0.7",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-haptic-feedback": "*",
     "react-native-pager-view": "6.3.0",
@@ -45,6 +46,7 @@
     "react-native-svg": "15.2.0",
     "react-native-swiper": "^1.6.0",
     "react-native-tab-view": "^3.0.0",
+    "react-native-ui-datepicker": "^2.0.4",
     "react-native-vector-icons": "*",
     "react-navigation": "*"
   },

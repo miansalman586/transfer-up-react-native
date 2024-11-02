@@ -36,7 +36,7 @@ export default function StartScreen({ navigation }) {
               style={{
                 textAlign: 'center',
                 color: '#2a80b9',
-                fontSize: 32,
+                fontSize: 38,
                 fontWeight: 'bold',
               }}>
               TRANSFERUP
