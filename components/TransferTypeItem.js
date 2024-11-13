@@ -29,7 +29,7 @@ export default function TransferTypeItem({ transferTypeId, transferTypeData, cal
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-         <TransferTypeIcon  transferType={transferTypeData} />
+         <TransferTypeIcon  transferType={transferTypeData} color="white" />
         </View>
         <View style={{ marginTop: 3, flex: 1 }}>
           <View

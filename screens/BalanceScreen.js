@@ -717,6 +717,7 @@ export default function BalanceScreen({ route, navigation }) {
                   </View>
                 </Pressable>
                 <Pressable
+                disabled={balanceData?.totalBalance > 0.0 || balanceData?.isPendingTransaction}
                   style={{
                     paddingBottom: 15,
                     paddingRight: 25,
@@ -764,7 +765,7 @@ export default function BalanceScreen({ route, navigation }) {
                       }}>
                       <AntDesign
                         size={27.5}
-                        color={
+                        color={balanceData?.totalBalance > 0.0 || balanceData?.isPendingTransaction ? '#636562' :
                          'white'
                         }
                         name="delete"
@@ -780,7 +781,7 @@ export default function BalanceScreen({ route, navigation }) {
                       <View>
                         <Text
                           style={{
-                            color:
+                            color: balanceData?.totalBalance > 0.0 || balanceData?.isPendingTransaction ? '#636562' :
                              'white',
                             fontSize: 18,
                             marginTop: 15,
@@ -792,7 +793,7 @@ export default function BalanceScreen({ route, navigation }) {
                         <Entypo
                           name="chevron-right"
                           size={26}
-                          color={
+                          color={balanceData?.totalBalance > 0.0 || balanceData?.isPendingTransaction ? '#636562' :
                            'white'
                           }
                         />

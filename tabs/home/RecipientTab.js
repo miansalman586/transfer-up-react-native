@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Pressable, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, Dimensions, Image } from 'react-native';
 import { useState } from 'react';
 import ItemLoader from '../../components/ItemLoader';
 
@@ -11,6 +11,8 @@ import * as Contacts from 'expo-contacts';
 import {useEffect} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getSetting } from '../../utils/common';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import TransferTypeIcon from '../../components/TransferTypeIcon';
 
 export default function RecipientTab({route, navigation}) {
 
@@ -221,20 +223,27 @@ let firstId = null;
                              alignItems: 'center',
                              paddingTop: 25,
                              paddingBottom: 20,
+                             justifyContent: 'center',
+                             flexDirection: 'row',
                              marginLeft: 20,
                              width: (Dimensions.get('window').width - 60) / 2,
                              marginRight: index == transferTypes.length - 1 ? 25 : 0,
                              borderBottomColor: currentScreen == transferType.transferTypeName.replace(' ', '') ? '#2a80b9' : '#2A2C29',
                              borderBottomWidth: 4,
                            }}>
+                            <View style={{flexDirection: 'row'}}>
+                            <TransferTypeIcon transferType={transferType} color={currentScreen == transferType.transferTypeName.replace(' ', '') ? '#2a80b9' : 'white'} />
                            <Text
                              style={{
                                color: currentScreen == transferType.transferTypeName.replace(' ', '') ? '#2a80b9' : 'white',
                                fontSize: 18,
+                               marginLeft: 20,
+                               marginTop: 5,
                                fontWeight: currentScreen == transferType.transferTypeName.replace(' ', '') ? 'bold' : '',
                              }}>
                              {transferType.transferTypeName}
                            </Text>
+                           </View>
                          </TouchableOpacity>
                        
                       ))}

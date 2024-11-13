@@ -7,6 +7,7 @@ import ScreenLoader from '../../components/ScreenLoader';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as SecureStore from 'expo-secure-store';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -175,6 +176,7 @@ export default function SettingsScreen({ navigation }) {
                 borderColor: '#2A2C29',
               }}></View>
             <Pressable
+            disabled={global.balances?.some(e=>e.totalBalance > 0.0 || e.isPendingTransaction)}
               onPressIn={handleCloseAccountPressIn}
               onPressOut={handleCloseAccountPressOut}
               style={{
@@ -196,9 +198,10 @@ export default function SettingsScreen({ navigation }) {
                      
                 let result = await httpRequest('customer/update-account-status', 'put', {
                   accountStatusId: 4
-                }, true, setIsLoading);
-                if (result.success) {
-
+                }, true, setIsLoading, navigation, false);
+                if (result.status == 200) {
+                  await SecureStore.deleteItemAsync('JwtToken');
+navigation.navigate('OnBoarding');
                 }
                       },
                     },
@@ -225,7 +228,7 @@ export default function SettingsScreen({ navigation }) {
                   <AntDesign
                     name="closecircleo"
                     size={28}
-                    color={
+                    color={ global.balances?.some(e=>e.totalBalance > 0.0 || e.isPendingTransaction) ? '#636562' :
                     'white'
                     }
                   />
@@ -240,14 +243,14 @@ export default function SettingsScreen({ navigation }) {
                   <View>
                     <Text
                       style={{
-                        color:  'white',
+                        color: global.balances?.some(e=>e.totalBalance > 0.0 || e.isPendingTransaction) ? '#636562' : 'white',
                         fontSize: 18,
                       }}>
                       Close account
                     </Text>
                     <Text
                       style={{
-                        color:
+                        color: global.balances?.some(e=>e.totalBalance > 0.0 || e.isPendingTransaction) ? '#636562' :
                           'white',
                         fontSize: 14,
                         marginTop: 10,
@@ -259,7 +262,7 @@ export default function SettingsScreen({ navigation }) {
                     <Entypo
                       name="chevron-right"
                       size={26}
-                      color={
+                      color={ global.balances?.some(e=>e.totalBalance > 0.0 || e.isPendingTransaction) ? '#636562' :
                          isCloserAccountPressed
                           ? 'white'
                           : '#2a80b9'

@@ -405,7 +405,7 @@ export default function ManageTab({ route, navigation }) {
                       onPress: async () => {
                      
                         await SecureStore.deleteItemAsync('JwtToken');
-                        navigation.navigate('Login');
+                        navigation.navigate('OnBoarding');
                   
 
                       },
