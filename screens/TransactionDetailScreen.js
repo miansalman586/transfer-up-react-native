@@ -958,7 +958,7 @@ export default function TransactionDetailScreen({ route, navigation }) {
     marginTop: 20,
     lineHeight:25,
   }}>
-  Please send exactly <Text style={{fontWeight: 'bold'}}>{transactionData?.totalAmount} {transactionData?.currency}</Text> to our PayPal email address <Text style={{fontWeight: 'bold'}}>{transactionData?.payPalAccountEmailAddress}</Text> and include the transaction number <Text style={{fontWeight: 'bold'}}>{transactionData?.transactionId}</Text> in the notes while you are sending money otherwise, we won't be able to track your payment.
+  Please send exactly <Text style={{fontWeight: 'bold'}}>{transactionData?.totalAmount} {transactionData?.currency}</Text> to our PayPal email address <Text style={{fontWeight: 'bold'}}>{transactionData?.payPalAccountEmailAddress}</Text> with transaction type <Text style={{fontWeight: 'bold'}}>{transactionData?.paypalTransactionType}</Text> and include the transaction number <Text style={{fontWeight: 'bold'}}>{transactionData?.transactionId}</Text> in the notes while you are sending money otherwise, we won't be able to track your payment.
 </Text>
                         }
                     

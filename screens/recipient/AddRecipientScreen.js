@@ -287,7 +287,7 @@ const handleIBANBlur = async () => {
                 }}>
                   <View style={{flexDirection: 'row'}}>
                     <View style={{marginTop: 13, marginLeft: 20}}>
-                  <TransferTypeIcon transferType={transferType} />
+                  <TransferTypeIcon transferType={transferType} color="white" />
                   </View>
                   <Text style={{
                         color: 'white',
@@ -310,9 +310,13 @@ const handleIBANBlur = async () => {
              
                 </TouchableOpacity>
 
-                
+     {transferType &&
+<View>
+
+
+             
 <Text style={{ color: 'white' , marginTop: 20}}>Currency</Text>
-                <TouchableOpacity disabled={!transferType} activeOpacity={0.5} onPress={() => {
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
                       bottomSheetCurrencyModalRef.current.present();
                       setCurrencySearchText(null);
                 }}>
@@ -377,8 +381,8 @@ const handleIBANBlur = async () => {
              
                 </TouchableOpacity>
 
-
-
+                </View>
+ }  
 {((transferType?.transferTypeId == 2 || transferType?.transferTypeId == 5) )&&
 <View>
 
@@ -727,13 +731,13 @@ const handleIBANBlur = async () => {
                         emailAddress: emailAddress,
                         currencyId: currency?.currencyId,
                         transferTypeId: transferType?.transferTypeId,
+                        iban: iban,
                         wiseRecipient: {
                           type: currency?.type,
                           currency: currency?.currencyName,
                           details: {
                             accountNumber: currency?.currencyId == 1006 ? emailAddress : accountNumber,
                             bic: currency?.currencyId == 2 ? bic : null,
-                            iban: iban,
                             abartn: currency?.currencyId == 1 ? bic : null,
                             accountType: currency?.currencyId == 1 ? accountType : null,
                           },

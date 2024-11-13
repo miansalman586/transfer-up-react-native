@@ -268,7 +268,7 @@ const [idNo, setIDNo] = useState(null);
                     </View>
                   </View>
                   <View style={{ marginTop: 20 }}>
-                    <Text style={{ color: 'white' }}>Date of Birth (DD/MM/YYYY)</Text>
+                    <Text style={{ color: 'white' }}>Date of Birth (MM/DD/YYYY)</Text>
                     <View
                       style={{
                         height: 50,
@@ -315,7 +315,7 @@ const [idNo, setIDNo] = useState(null);
                   <ErrorMessage
               flag={dobDateError && dateOfBirth}
               message={
-              'Please enter valid date (DD/MM/YYYY) format and dob cannot be in the future.'
+              'Please enter valid date (MM/DD/YYYY) format and dob cannot be in the future.'
               }
             />
                   <View>
@@ -436,7 +436,7 @@ const [idNo, setIDNo] = useState(null);
                   </View>
 
                 <View style={{ marginTop: 20 }}>
-                    <Text style={{ color: 'white' }}>ID Expiry Date (DD/MM/YYYY)</Text>
+                    <Text style={{ color: 'white' }}>ID Expiry Date (MM/DD/YYYY)</Text>
                     <View
                       style={{
                         height: 50,
@@ -482,7 +482,7 @@ const [idNo, setIDNo] = useState(null);
                   <ErrorMessage
               flag={expiryDateError && expiryDatePicker}
               message={
-              'Please enter valid date (DD/MM/YYYY) format and expiry cannot be in the past.'
+              'Please enter valid date (MM/DD/YYYY) format and expiry cannot be in the past.'
               }
             />
 <Text style={{ color: 'white' , marginTop: 20}}>Nationality</Text>

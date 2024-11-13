@@ -1,6 +1,6 @@
 import ScreenLoader from '../components/ScreenLoader';
 
-import { View, StatusBar, Pressable, Text} from 'react-native';
+import { View, StatusBar, Pressable, Text,Image} from 'react-native';
 import Swiper from 'react-native-swiper';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +28,25 @@ export default function OnBoardingScreen({ navigation }) {
       justifyContent: 'flex-end',
     }}>
       <StatusBar barStyle="light-content" />
-      <Swiper  style={{marginTop: 570}}
+      <View style={{flexDirection:'row', marginTop:'25%',textAlign: 'center',justifyContent:'center'}}>
+      <Image
+            style={{   width: 48, height: 42, marginRight:15}}
+            source={require('../assets/icons/transfer-up-theme.png')}
+          />
+            <Text
+              style={{
+                color: '#2a80b9',
+                fontSize: 30,
+                marginTop:2,
+
+                fontWeight: 'bold',
+                marginBottom: 30,
+              }}>
+              TRANSFERUP
+            </Text>
+      </View>
+    
+      <Swiper  style={{marginTop: 420}}
       dotColor="#2A2C29"           
       activeDotColor="#2a80b9"      
       showsPagination={true} autoplay >

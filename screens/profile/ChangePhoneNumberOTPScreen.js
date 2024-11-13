@@ -66,8 +66,8 @@ export default function ChangePhoneNumberOTPScreen({ route, navigation }) {
   };
 
   const sendOTP = async () => {
-   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((global.user?.countryCode + global.user?.phoneNumber)), 'get', null, false, null);
-  httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((newCountryCode + newPhoneNumber)), 'get', null, false, null);
+   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((global.user?.countryCode + parseInt(global.user?.phoneNumber))) + '&requestType=SMS', 'get', null, false, null);
+  httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((newCountryCode + newPhoneNumber)) + '&requestType=SMS', 'get', null, false, null);
   };
 
   const onFocus = async () => {

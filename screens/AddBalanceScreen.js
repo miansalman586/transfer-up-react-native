@@ -347,7 +347,7 @@ export default function AddBalanceScreen({ route, navigation }) {
                 if (result.status == 200) {
                   navigation.navigate('HomeTab');
                 } else {
-                  Alert.alert('Error', result.message);
+                  Alert.alert('Error', result.status.toString());
                 }
               }}
               disabled={!amount || amount <= 0 || (transferType?.transferTypeId == 2 && !paypalTransactionType)}
@@ -425,7 +425,7 @@ export default function AddBalanceScreen({ route, navigation }) {
           />
              <BottomSheet
             bottomSheetModalRef={bottomSheetPayPalTransactionTypeModalRef}
-            snapPoints={['40%']}
+            snapPoints={[(transactionTypes?.length * 25) + '%']}
             title={'Select transaction type'}
             content={
               <View>

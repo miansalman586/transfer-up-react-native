@@ -85,15 +85,15 @@ return formattedDob;
       });
      } else {
         result = await result.json();
-        alert(JSON.stringify(result));
+        Alert.alert('Error', result.message);
      }
 
     }
   };
 
   const sendOTP = async () => {
-   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((route.params.country.countryCode + route.params.phoneNumber)), 'get', null, false, null, navigation, true);
-  httpRequest('public/generate-otp-code?otpType=' + route.params.emailAddress, 'get', null, false, null, navigation, true);
+   httpRequest('public/generate-otp-code?otpType=' + encodeURIComponent((route.params.country.countryCode + parseInt(route.params.phoneNumber))) + '&requestType=SMS', 'get', null, false, null, navigation, true);
+  httpRequest('public/generate-otp-code?otpType=' + route.params.emailAddress + '&requestType=EMAIL', 'get', null, false, null, navigation, true);
   };
 
   const onFocus = async () => {
@@ -136,7 +136,7 @@ return formattedDob;
                 OTP Verification
               </Text>
               <Text style={{ fontSize: 16, marginTop: 40, color: 'white' }}>
-                Enter the OTP sent to your Email Address
+                Enter the OTP sent to Email Address
               </Text>
               <Text
                 style={{ marginTop: 5, color: 'white', fontWeight: 'bold' }}>
@@ -181,7 +181,7 @@ return formattedDob;
               </Text>
               <Text
                 style={{ marginTop: 5, color: 'white', fontWeight: 'bold' }}>
-                {route.params.phoneNumber}
+                {route.params.country.countryCode}{route.params.phoneNumber}
               </Text>
               <View style={{ marginTop: 20, flexDirection: 'row' }}>
                 {newPhoneCode.map((digit, index) => (

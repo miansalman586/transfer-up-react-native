@@ -27,7 +27,7 @@ export default async function httpRequest(
       requestBody = JSON.stringify(body);
     }
 
-    const response = await fetch('http://10.101.41.218/api/' + url, {
+    const response = await fetch('https://transferup.org/api/' + url, {
       method: method,
       headers: {
         Authorization: 'Bearer ' + (auth ? jwt : ''),

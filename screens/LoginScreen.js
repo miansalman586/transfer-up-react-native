@@ -6,6 +6,7 @@ import {
   Text,
   Pressable,
   Alert,
+  Image
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -13,6 +14,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 import ScreenLoader from '../components/ScreenLoader';
 import GoBackTopBar from '../components/GoBackTopBar';
+import httpRequest from '../utils/httpRequest';
 
 export default function LoginScreen({ route, navigation }) {
 
@@ -49,21 +51,17 @@ export default function LoginScreen({ route, navigation }) {
   const handleLoginRelease = () => setisLoginPressed(false);
 
   const handleLogin = async () => {
+    handleEmailAddressBlur();
+    handlePasswordBlur();
+    
     handleLoginRelease();
 
     setIsLoading(true);
 
-    let result = await fetch('http://10.101.41.218/api/token/customer', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        emailAddress: emailAddressInputValue,
-        password: passwordInputValue
-       }),
-    });
-    setIsLoading(false);
+    let result = await httpRequest('token/customer', 'post', {
+      emailAddress: emailAddressInputValue,
+      password: passwordInputValue
+     }, false, setIsLoading, navigation, true);
 
       if (result.status == 200) {
     result = await result.json();
@@ -113,16 +111,22 @@ export default function LoginScreen({ route, navigation }) {
           }} />
 
               <StatusBar barStyle="light-content" />
-              <Text
+              <View style={{flexDirection:'row', marginBottom:20, marginTop:20, textAlign: 'center',justifyContent:'center'}}>
+      <Image
+            style={{   width: 48, height: 42, marginRight:15}}
+            source={require('../assets/icons/transfer-up-theme.png')}
+          />
+            <Text
               style={{
-                textAlign: 'center',
                 color: '#2a80b9',
-                fontSize: 32,
+                fontSize: 30,
+                marginTop:2,
                 fontWeight: 'bold',
                 marginBottom: 30,
               }}>
               TRANSFERUP
             </Text>
+      </View>
           <Text
             style={{
               marginLeft: 20,

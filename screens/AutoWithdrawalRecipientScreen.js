@@ -82,7 +82,7 @@ setTransferType(tr);
 setEmailAddress(payPalEmailAddress);
 
 if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId == 10) {
-  let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + tr.transferTypeId, 'get', null, true, null, navigation, false);
+  let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + tr.transferTypeId, 'get', null, true, setIsLoading, navigation, false);
   if (recip.status == 200) {
    recip = await recip.json();
    setRecipients(recip)

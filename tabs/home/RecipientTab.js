@@ -28,7 +28,7 @@ export default function RecipientTab({route, navigation}) {
     const onFucus = async ()=>{
    
 let firstId = null;
-
+setRecipients(null);
   let result = await httpRequest('customer/get-recipient-transfer-type', 'get', null, true, null);
   if (result.status == 200) {
     result = await result.json();
@@ -65,11 +65,13 @@ let firstId = null;
     };
 
     const getContactRecipiet = async ()=> {
+setRecipients(null);
+
         let contacts = await getContacts();
         const emailAddresses = contacts?.map(contact => contact.emails.map(e => e.email)).flat().join(',');
 
         
-        setRecipients(null);
+       
         let recipients = await httpRequest(
           'customer/get-transfer-pay-recipient?emailAddress='+emailAddresses,
           'get',
