@@ -6,6 +6,7 @@ import GoBackTopBar from '../../components/GoBackTopBar';
 import httpRequest from '../../utils/httpRequest';
 
 import ScreenLoader from '../../components/ScreenLoader';
+import TransferTypeIcon from '../../components/TransferTypeIcon';
 
 export default function RecipientDetailScreen({ route, navigation })  {
 const { recipientId, transferTypeId , tpEmailAddress} = route.params;
@@ -117,17 +118,7 @@ useEffect(() => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <FontAwesome5
-            name={
-                recipientDetail?.transferTypeId == 1
-                ? 'bank'
-                : recipientDetail?.transferTypeId == 2
-                ? 'paypal'
-                : ''
-            }
-            size={27.5}
-            color="white"
-          />
+              <TransferTypeIcon transferType={{transferTypeId: recipientDetail?.transferTypeId}} color="white" />
         </View>
              
                 <Text

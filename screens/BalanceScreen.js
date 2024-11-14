@@ -115,6 +115,17 @@ export default function BalanceScreen({ route, navigation }) {
     if (!result.status == 200) {
       setIsAutoWithdrawalRequest(!isAutoWithdrawalRequest);
       Alert.alert('Error', result.Message);
+    } else {
+      let balanceData = await httpRequest(
+        'customer/get-balance-detail?currencyId=' +  currencyId,
+        'get',
+        null,
+        true,
+        setIsLoading,
+        navigation, false
+      );
+      balanceData= await balanceData.json();
+      setBalanceData(balanceData);
     }
   };
 
@@ -130,7 +141,7 @@ export default function BalanceScreen({ route, navigation }) {
     if (!result.status == 200) {
       setIsAutoConversion(!isAutoConversion);
       Alert.alert('Error', result.Message);
-    }
+    } 
   };
 
   const setPrimary = async () => {

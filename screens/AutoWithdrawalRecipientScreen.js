@@ -15,6 +15,7 @@ import Recipient from '../components/Recipient';
 
 import ScreenLoader from '../components/ScreenLoader';
 import RecipientItem from '../components/RecipientItem';
+import TransferTypeIcon from '../components/TransferTypeIcon';
 
 export default function AutoWithdrawalRecipientScreen({ route, navigation })  {
 const {transferTypeId, payPalEmailAddress, balanceData} = route.params;
@@ -119,42 +120,49 @@ if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId ==
                 }}>
              Auto withdrawal recipient - {balanceData?.currency}
               </Text>
-              <Text style={{ color: 'white' }}>Transfer Type</Text>
-                  <TouchableOpacity activeOpacity={0.5} onPress={() => {
-                        bottomSheetPTransferTypeModalRef.current.present();
-                        setTransferTypeSearchText(null);
-                  }}>
-                  <View
-                  style={{
-                    height: 52,
-                    paddingLeft: 5,
-                    color: 'white',
-                    paddingRight: 20,
-                    backgroundColor: '#2A2C29',
-                    marginTop: 10,
-                    fontSize: 18,
-                    flexDirection: 'row'
-                    , justifyContent: 'space-between'
-                  }}>
-                    <Text style={{
-                          color: 'white',
-                          fontSize: 18,
-                          marginLeft: 20,
-                          marginTop: 15
-                    }}>
-        {transferType?.transferTypeName}
-  
-                    </Text>
-     <FontAwesome5
-                        style={{ marginTop: 15, marginLeft: 10 }}
-                        name="chevron-down"
-                        size={18}
-                        color="white"
-                      />
-  
+            
+
+                  <Text style={{ color: 'white' }}>Transfer Type</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                       bottomSheetPTransferTypeModalRef.current.present();
+                       setTransferTypeSearchText(null);
+                }}>
+                <View
+                style={{
+                  height: 52,
+                  paddingLeft: 5,
+                  color: 'white',
+                  paddingRight: 20,
+                  backgroundColor: '#2A2C29',
+                  marginTop: 10,
+                  fontSize: 18,
+                  flexDirection: 'row'
+                  , justifyContent: 'space-between'
+                }}>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{marginTop: 13, marginLeft: 20}}>
+                  <TransferTypeIcon transferType={transferType} color="white" />
                   </View>
-               
-                  </TouchableOpacity>
+                  <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        marginLeft: 20,
+                        marginTop: 15
+                  }}>
+       {transferType?.transferTypeName}
+
+                  </Text>
+                  </View>
+   <FontAwesome5
+                      style={{ marginTop: 15, marginLeft: 10 }}
+                      name="chevron-down"
+                      size={18}
+                      color="white"
+                    />
+
+                </View>
+             
+                </TouchableOpacity>
 
              {transferType?.transferTypeId == 2 &&
 <View>
@@ -267,9 +275,9 @@ if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId ==
                         navigation.goBack();
                     } 
               }}
-              disabled={!transferTypeId || 
+              disabled={  !transferType ||
                 (transferType?.transferTypeId == 2 && !emailAddress) ||
-                (transferType?.transferTypeId == 9 && !recipient)
+                (transferType?.transferTypeId == 9 && !recipient?.customerRecipientId)
               }
               style={{
                 marginTop: 'auto',
@@ -279,9 +287,9 @@ if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId ==
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor:
-                !transferTypeId || 
+                 !transferType ||
                 (transferType?.transferTypeId == 2 && !emailAddress) ||
-                (transferType?.transferTypeId == 9 && !recipient)
+                (transferType?.transferTypeId == 9 && !recipient?.customerRecipientId)
                     ? '#2A2C29'
                     : isContinuePressed
                     ? 'white'
@@ -334,6 +342,7 @@ if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId ==
                           bottomSheetRecipientModalRef.current.close();
 
                           setRecipient(recipientData);
+
                         }}
                       />
                     ))}
@@ -385,10 +394,18 @@ if (tr?.transferTypeId == 9 || tr?.transferTypeId == 5  || tr?.transferTypeId ==
                         isRadioButton={true}
                         transferTypeId={transferType?.transferTypeId}
                         transferTypeData={transferTypeData}
-                        callback={() => {
+                        callback={async () => {
                             bottomSheetPTransferTypeModalRef.current.close();
                             
                             setTransferType(transferTypeData);
+
+                            let recip = await httpRequest('customer/get-recipient-by-transfer-type-id?transferTypeId=' + transferTypeData.transferTypeId, 'get', null, true, setIsLoading, navigation, false);
+                            if (recip.status == 200) {
+                             recip = await recip.json();
+                             setRecipients(recip)
+                            }
+
+                         
                          
                         }}
                       />
