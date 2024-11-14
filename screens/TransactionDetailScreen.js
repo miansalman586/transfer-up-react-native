@@ -21,6 +21,7 @@ import ScreenLoader from '../components/ScreenLoader';
 import { useState, useEffect } from 'react';
 
 import httpRequest from '../utils/httpRequest';
+import formateFullDate from '../utils/formateFullDate';
 
 export default function TransactionDetailScreen({ route, navigation }) {
   const { transactionId } = route.params;
@@ -1018,7 +1019,7 @@ showToast('Copied!');
                       color: 'white',
                       fontSize: 16,
                     }}>
-                    {new Date(transactionData?.date).toLocaleString()}
+                      {formateFullDate(new Date(transactionData?.date))}
                   </Text>
                 </View>
                 {transactionData?.rejectedReason && 
