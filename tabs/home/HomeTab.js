@@ -62,6 +62,7 @@ export default function HomeTab({ navigation }) {
   const onFocus = async () => {
     setBalances(null);
     httpRequest('customer/get-balance', 'get', null, true, null, navigation).then(async balances=>{
+    
       balances = await balances.json();
       if (balances) {
         setBalances(balances);
@@ -476,7 +477,7 @@ export default function HomeTab({ navigation }) {
               </Pressable>
             </View>
             {!transactions && (
-              <View style={{ flex: 'row' }}>
+              <View style={{  }}>
                 <ItemLoader count={3} />
               </View>
             )}
